@@ -3,6 +3,7 @@ co-occurrence extraction kernel
 
 
 Copyright 2015 Aleksandr Drozd
+
 Copyright 2015 JST CREST: EBD: Extreme Big Data – Convergence of Big Data and HPC for Yottabyte Processing
 
 Licensed under the Apache License, Version 2.0 (the "License");
