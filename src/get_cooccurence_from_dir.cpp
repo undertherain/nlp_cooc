@@ -2,6 +2,7 @@
 #include <string>
 #include <cstring>
 #include <cmath>
+#include <ctime>
 #include <fstream>
 #include <sstream>
 #include <exception>
@@ -101,6 +102,14 @@ struct window_params
     uint64_t size_window;
     bool symmetric;
 };
+
+std::string get_str_time()
+{
+    std::time_t result = std::time(nullptr);
+    return std::asctime(std::localtime(&result));
+}
+
+
 int main(int argc, char * argv[])
 {
     Options options = ProcessOptions(argc,argv);
@@ -110,8 +119,9 @@ int main(int argc, char * argv[])
     {
         std::cerr << "creating target directory\n";
     }
-    provenance = "source corpus : ";
-    provenance = provenance + str_path_in + "\n";
+    provenance = std::string();
+    provenance += "collected on " + get_str_time();
+    provenance += "source corpus : " + str_path_in + "\n";
 
     std::cerr<<"assigning ids\n";
     vocab.read_from_dir(str_path_in);
