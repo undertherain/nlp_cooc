@@ -141,6 +141,12 @@ int main(int argc, char * argv[])
     write_value_to_file((path_out / boost::filesystem::path("cnt_words")).string(),vocab.cnt_words_processed);
     write_vector_to_file((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id);
 
+    if (options.size_window<2)
+        {
+            std::cerr<<"window size <=1 - nothing else to be done! quiting...\n";
+            return 0;
+        }
+
     std::cerr<<"extracting bigrams\n";
     counters.resize(vocab.cnt_words);
     provenance+="windows size : "+FormatHelper::ConvertToStr(options.size_window);
