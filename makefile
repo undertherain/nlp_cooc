@@ -1,8 +1,9 @@
 .Phony: clean tests test
 
+CXX = g++
 LIBS = -lboost_filesystem -lboost_system -lboost_program_options
-
 CXXFLAGS = -Wall -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-color=auto -fopenmp -Wno-error=narrowing
+BUILD_NUMBER_FILE = build-number.txt
 
 all: bin/get_cooccurence_from_dir
 #all: bin/BNC_to_text bin/get_cooccurence_from_dir bin/sparse
@@ -15,6 +16,12 @@ bin/BNC_to_text: src/BNC_to_text.cpp
 
 bin/get_cooccurence_from_dir: obj/get_cooccurence_from_dir.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
+
+bin/my_w2v: src/my_w2v.cpp obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o
+	$(CXX)  $^ $(CXXFLAGS) -o $@ $(LIBS)
+
+obj/my_w2v: src/my_w2v.cpp 
+	g++  $^ $(CXXFLAGS) -c -o $@ 
 
 obj/get_cooccurence_from_dir.o: src/get_cooccurence_from_dir.cpp 
 	g++  $^ $(CXXFLAGS) -c -o $@ 
@@ -53,3 +60,11 @@ test: all
 
 clean:
 	rm -f obj/*.o
+
+BUILD_NUMBER_LDFLAGS  = -Xlinker --defsym -Xlinker __BUILD_DATE=$$(date +'%Y%m%d')
+BUILD_NUMBER_LDFLAGS += -Xlinker --defsym -Xlinker __BUILD_NUMBER=$$(cat $(BUILD_NUMBER_FILE))
+
+# Build number file.  Increment if any object file changes.
+$(BUILD_NUMBER_FILE): bin/get_cooccurence_from_dir
+	@if ! test -f $(BUILD_NUMBER_FILE); then echo 0 > $(BUILD_NUMBER_FILE); fi
+	@echo $$(($$(cat $(BUILD_NUMBER_FILE)) + 1)) > $(BUILD_NUMBER_FILE)
