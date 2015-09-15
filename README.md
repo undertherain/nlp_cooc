@@ -1,7 +1,7 @@
 # nlp_cooc
 co-occurrence extraction kernel
 
-please refer to http://blackbird.pw/projects/tut_vsm/ for demos and tutorials
+please refer to http://vsm.blackbird.pw/ for demos and tutorials
 
 
 Copyright 2015 Aleksandr Drozd
