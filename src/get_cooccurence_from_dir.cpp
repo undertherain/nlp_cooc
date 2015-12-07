@@ -71,7 +71,9 @@ void load_bigrams(std::string str_path_in,const Options & options)
             {
                 //freq_per_id[id_current]++;
                 cnt_words_processed++;
-                cb.push_back(id_current);
+                if ((cnt_words_processed % 500000) == 0)
+                    std::cerr<<"bgrams "<<cnt_words_processed/1000<<"k of "<<vocab.cnt_words_processed/1000<<"k (" <<100.0*cnt_words_processed/vocab.cnt_words_processed<<"%)\n";
+                 cb.push_back(id_current);
                 auto i = cb.begin();
                 auto first = *i;
                 for (size_t j=1;j<cb.size();j++)
