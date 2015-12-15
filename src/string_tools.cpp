@@ -4,6 +4,7 @@
 #include <codecvt>
 #include "string_tools.hpp"
 #include <iostream>
+#include <algorithm>
 //#if !defined(MAX_STR_SIZE)
 //#define MAX_STR_SIZE  1500
 //#endif
@@ -31,6 +32,7 @@ inline void clean(std::wstring & str)
 {
       trim3(str);
       std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+      //std::replace( str.begin(), str.end(), L'ё', L'е'); //todo make it optional
 }
 
 wchar_t * clean_ptr(wchar_t * str)
@@ -46,8 +48,13 @@ wchar_t * clean_ptr(wchar_t * str)
 //  {
 //  std::cerr<<wstring_to_utf8(new_ptr)<<" "<<wcslen(new_ptr)<<" "<<new_ptr[6]<<"\n";
   //std::cerr<<"endptr = "<<end_ptr<<"\n";
-  while (((!std::isalpha(*end_ptr,locale)) || (*end_ptr==160))&& (end_ptr>new_ptr)) end_ptr--;
+  while (((!std::isalpha(*end_ptr,locale)) || (*end_ptr==160))&& (end_ptr>new_ptr)) 
+      end_ptr--;
   *(end_ptr+1)=0;
+  for (auto ptr=new_ptr;ptr<end_ptr;ptr++)
+  {
+    if (*ptr==L'ё') *ptr=L'е';
+  }
 //  }
   return new_ptr;
 }

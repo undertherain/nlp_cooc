@@ -29,6 +29,7 @@ Index cnt_bigrams;
 typedef std::map<Index,Index> Accumulator;
 //std::map<Index,Accumulator> counters;
 std::vector<Index> freq_per_id;
+std::vector<std::wstring> lst_id2word;
 std::vector<Accumulator> counters;
 Vocabulary vocab;
 #include "basic_utils/write_data.hpp"
@@ -65,28 +66,37 @@ void load_bigrams(std::string str_path_in,const Options & options)
         if (vocab.is_word_valid(std::wstring(word)))
         {
             //std::cerr<<wstring_to_utf8(std::wstring(word))<<"\n";
+            cnt_words_processed++;
             Index id_current = vocab.get_id(word);
-            if (word[0]==L'.') id_current=-1;
+            if (word[0]==L'.')      
+                {
+                    id_current=-1;
+                    for (size_t j=1;j<cb.size();j++)
+                        cb.push_back(id_current);
+                    continue;
+                }
+
 //            if (id_current>=0)
             {
                 //freq_per_id[id_current]++;
-                cnt_words_processed++;
                 if ((cnt_words_processed % 500000) == 0)
                     std::cerr<<"bgrams "<<cnt_words_processed/1000<<"k of "<<vocab.cnt_words_processed/1000<<"k (" <<100.0*cnt_words_processed/vocab.cnt_words_processed<<"%)\n";
                  cb.push_back(id_current);
-                auto i = cb.begin();
-                auto first = *i;
-                for (size_t j=1;j<cb.size();j++)
+                //auto i = cb.begin();
+                auto last = cb[cb.size()-1];
+                for (size_t j=0;j<cb.size()-1;j++)
                 {
-                    //std::cerr<<first<<"\t"<<cb[j]<<"\n";
-                    accumulate(first,cb[j]);
-                    accumulate(cb[j],first);
+
+                    //std::cerr<<"accing "<<last<<" - "<<cb[j]<<"\n";
+                    //std::cerr<<"accing "<<wstring_to_utf8(lst_id2word[last])<<" - "<<wstring_to_utf8(lst_id2word[cb[j]])<<"\n";
+                    accumulate(last,cb[j]);
+                    accumulate(cb[j],last);
                 }
             }
         }
     }
     //the rest of the list
-    for (uint64_t i =0 ; i<size_window; i++) 
+    /*for (uint64_t i =0 ; i<size_window; i++) 
     {
         cb.push_back(-1);
         auto it = cb.begin();
@@ -97,6 +107,7 @@ void load_bigrams(std::string str_path_in,const Options & options)
             accumulate(cb[j],first);
         }
     }
+    */
 }
 
 struct window_params
@@ -139,11 +150,14 @@ int main(int argc, char * argv[])
     std::cerr<<"creating list of frequencies\n";
 
     freq_per_id.resize(vocab.cnt_words);
+    lst_id2word.resize(vocab.cnt_words);
     std::fill (freq_per_id.begin(),freq_per_id.end(),0);   
     std::cerr<<"populating frequencies\n";
     vocab.populate_frequency(freq_per_id);
     vocab.reassign_ids(freq_per_id);
     vocab.populate_frequency(freq_per_id);
+    vocab.populate_ids(lst_id2word);
+    
     std::cerr<<"dumping ids and frequencies\n";
 
     vocab.dump_ids((path_out / boost::filesystem::path("ids")).string());
@@ -169,7 +183,10 @@ int main(int argc, char * argv[])
 
     dump_crs_bin(path_out.string());
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
-    //dump_crs(path_out.string());
-    //write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string());
+    if (options.debug)
+    {
+        dump_crs(path_out.string());
+        write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string());
+    }
     return 0;
 }

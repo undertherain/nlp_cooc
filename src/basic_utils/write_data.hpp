@@ -153,7 +153,8 @@ for (size_t first=0;first<counters.size();first++)
       //if (t.second>0)
        // file<<first.first<<"\t"<<second.first<<"\t"<<second.second<<"\n";
         double v=log2((static_cast<double>(second.second)*vocab.cnt_words_processed)/(freq_per_id[first]*freq_per_id[second.first]));
-        file<<first<<"\t"<<second.first<<"\t"<<v<<"\n";
+        //file<<first<<"\t"<<second.first<<"\t"<<v<<"\n";
+        file<<wstring_to_utf8(lst_id2word[first])<<"\t"<<wstring_to_utf8(lst_id2word[second.first])<<"\t"<<second.second<<"\t"<<v<<"\n"; 
     }
 }
 

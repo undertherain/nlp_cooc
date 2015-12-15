@@ -75,6 +75,11 @@ void Vocabulary::populate_frequency(std::vector<Index> & lst_frequency )const
 	tree.populate_frequency(lst_frequency);	
 }
 
+void Vocabulary::populate_ids(std::vector<std::wstring> & lst_id2word )const
+{
+	tree.populate_ids(lst_id2word);	
+}
+
 void Vocabulary::reassign_ids(std::vector<Index> const & lst_frequency)
 {
 	std::vector<Index> ids_new;

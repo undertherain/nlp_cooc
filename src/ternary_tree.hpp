@@ -46,6 +46,7 @@ public:
     void reassign_ids();
     void reassign_ids_new(std::vector<Index> const  & lst_new_ids);
     void populate_frequency(std::vector<Index> & lst_frequency ) const;
+    void populate_ids(std::vector<std::wstring> & lst_id2word ) const;
     size_t count_nodes() const; 
 };
 
@@ -124,6 +125,15 @@ public:
     size_t pos;
     std::vector<Index> & lst_frequency;
     ActionPopulateFrequency(std::vector<Index> & _lst_frequency):pos(0), lst_frequency(_lst_frequency){}
+    void operator()(TernaryTreeNode<Index>* node,unsigned int depth);
+};
+
+class ActionPopulateIds: public Action
+{
+public:
+    size_t pos;
+    std::vector<std::wstring> & lst_id2word;
+    ActionPopulateIds(std::vector<std::wstring> & _lst_id2word):pos(0), lst_id2word(_lst_id2word){}
     void operator()(TernaryTreeNode<Index>* node,unsigned int depth);
 };
 

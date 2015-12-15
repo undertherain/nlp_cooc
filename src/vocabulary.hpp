@@ -23,6 +23,7 @@ public:
     void dump_frequency(const std::string & name_file) const;
     void dump_ids(const std::string & name_file) const;
     void populate_frequency(std::vector<Index> & lst_frequency )const;
+    void populate_ids(std::vector<std::wstring> & lst_id2word ) const;
     void reassign_ids(std::vector<Index> const & lst_frequency);
 	int64_t get_id(const wchar_t * str);
 	void reduce(int64_t threshold=5);

@@ -257,6 +257,12 @@ void ActionPopulateFrequency::operator()(TernaryTreeNode<Index>* node,unsigned i
     lst_frequency[node->id]=node->data;
 }
 
+void ActionPopulateIds::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+{
+    if (node->id>=0)
+    lst_id2word[node->id]=std::wstring(buffer,buffer+depth+1);
+}
+
 
 bool trim(TernaryTreeNode<Index> * * pnode, int64_t threshold, unsigned int depth)
 {
@@ -304,6 +310,13 @@ void TernaryTree::populate_frequency(std::vector<Index> & lst_frequency ) const
     ActionPopulateFrequency a(lst_frequency);
     visit_recursively(tree,0,a);
 }
+
+void TernaryTree::populate_ids(std::vector<std::wstring> & lst_id2word ) const
+{
+    ActionPopulateIds a(lst_id2word);
+    visit_recursively(tree,0,a);
+}
+
 
 void TernaryTree::dump_frequency(const std::string & name_file) const
 {

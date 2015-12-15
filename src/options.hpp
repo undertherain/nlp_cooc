@@ -11,6 +11,7 @@ struct Options
     //std::string path_out;
     boost::filesystem::path path_out;
     bool verbose;
+    bool debug;
     Options():verbose(false)
     {}
 };
@@ -29,6 +30,7 @@ Options ProcessOptions(const int argc, char * const argv[])
         ("destination_dir", program_options::value< boost::filesystem::path > (&options.path_out)->required(), "destination dir")
         ("window_size", program_options::value<uint64_t>(&(options.size_window))->default_value(2), "window size")
         ("minimal_frequency", program_options::value<uint64_t>(&(options.min_frequency))->default_value(10), "mimimal word frequency")
+        ("debug", program_options::value<bool>(&(options.debug))->default_value(false), "produce debug data")
         //("mode", program_options::value<std::string>(&(options.mode))->default_value("multi"), "execution mode")
         ;
     program_options::variables_map optionsMap;
