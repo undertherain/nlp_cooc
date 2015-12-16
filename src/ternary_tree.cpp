@@ -8,8 +8,23 @@
 //#define MAX_STR_SIZE  1500
 wchar_t  buffer[MAX_STR_SIZE];
 
-
 Index TernaryTree::set_id_and_increment(const wchar_t * str)
+{
+    auto node = get_node_or_create(str);
+    if (!node->data) node->id=id_global++;
+    node->data++;
+    return node->id;    
+}
+
+void TernaryTree::set_id(const wchar_t * str,Index id)
+{
+    auto node = get_node_or_create(str);
+    node->data=1;
+    node->id=id;    
+}
+
+
+TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
 {
     if (tree==NULL)
     { 
@@ -24,7 +39,10 @@ Index TernaryTree::set_id_and_increment(const wchar_t * str)
     if ((wcslen(str)==1)&&(node->c==str[0])) is_done=true;
     while (!is_done)
     {
-        if (depth>=MAX_STR_SIZE) {std::cerr<<"string too long in tree, aborting \n"; return -1;}
+        if (depth>=MAX_STR_SIZE) {
+            std::cerr<<"string too long in tree, aborting \n"; 
+            throw std::exception();
+        }
         wchar_t c=str[depth];
 //        std::cerr<<"depth = "<<depth<<"\tnode.c = "<<node->c<<"\tc = "<<c<<"\n";
         if (c==node->c)
@@ -65,40 +83,6 @@ Index TernaryTree::set_id_and_increment(const wchar_t * str)
             //continue;
         }
         //if (depth>=strlen(str)) is_done=true;
-        if ((depth>=wcslen(str)-1)&&(node->c==c)) is_done=true;
-    }
-    if (!node->data) node->id=id_global++;
-    node->data++;
-    return node->id;
-}
-
-TernaryTreeNode<Index> * TernaryTree::get_node(const wchar_t * str)
-{
-    auto node=tree;
-    unsigned int depth=0;
-    //std::cerr<<"fetching id for "<<str<<"\n";
-    bool is_done=false;
-    while (!is_done)
-    {
-        wchar_t c=str[depth];
-        if (c==node->c)
-        {
-            if (node->down==NULL) return NULL;
-            node=node->down;
-            depth++;
-        } else
-        if (c<node->c)
-        {
-            if (node->left==NULL)  return NULL;
-            node=node->left;
-        } else
-        if (c>node->c)
-        {
-            if (node->right==NULL) return NULL;
-            node=node->right;
-        }
-        c=str[depth];
-        //std::cerr<<"depth = "<<depth<<" node.c = "<<node->c<<"\n";
         if ((depth>=wcslen(str)-1)&&(node->c==c)) is_done=true;
     }
     return node;
@@ -145,30 +129,6 @@ public:
     virtual void operator()(TernaryTreeNode<Index>* node,unsigned int depth)=0;
 };
 
-class ActionReassignIds: public Action {
-public:
-    uint64_t current_id;
-    ActionReassignIds():current_id(0){}
-    void operator()(TernaryTreeNode<Index>* node,unsigned int depth)
-    {
-        if (node->data>0) node->id=current_id++;
-    }
-};
-
-class ActionReassignIdsFreq: public Action {
-public:
-    std::vector<Index> const & lst_new_ids;
-    ActionReassignIdsFreq(std::vector<Index> const & _lst_new_ids):lst_new_ids(_lst_new_ids){}
-    void operator()(TernaryTreeNode<Index>* node,unsigned int depth)
-    {
-        if (node->data>0) 
-            if (node->id>=0) 
-        {
-           //   std::cerr<<"replaceing "<<node->id<<" with "<<lst_new_ids[node->id]<<"\n";
-            node->id=lst_new_ids[node->id];
-        }
-    }
-};
 */
 
 ActionFile::ActionFile(std::string name_file)

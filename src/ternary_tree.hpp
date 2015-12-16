@@ -38,8 +38,9 @@ public:
     }
 //Index get_value(const TernaryTreeNode<Index> * node, const char * str) ;
     Index get_id(const wchar_t * str);
+    void set_id(const wchar_t * str,Index id);
     Index set_id_and_increment(const wchar_t * str);
-    TernaryTreeNode<Index> * get_node(const wchar_t * str);
+    TernaryTreeNode<Index> * get_node_or_create(const wchar_t * str);
     void dump_frequency(const std::string & name_file) const;
     void dump_ids(const std::string & name_file) const;
     void dump_dot(const std::string & name_file) const;

@@ -12,8 +12,8 @@
 class Vocabulary
 {
 	std::set<std::wstring> stopwords;
-	TernaryTree tree;
 public:
+    TernaryTree tree;
     size_t cnt_words;
     size_t cnt_words_processed;
     const std::locale locale;

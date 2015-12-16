@@ -10,7 +10,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -70,27 +69,45 @@ void load_bigrams(std::string str_path_in,const Options & options)
             cnt_words_processed++;
             Index id_current = vocab.get_id(word);
             if (word[0]==L'.')      
-            {
-                id_current=-1;
-                for (size_t j=1;j<cb.size();j++)
-                    cb.push_back(id_current);
+                {
+                    id_current=-1;
+                    for (size_t j=1;j<cb.size();j++)
+                        cb.push_back(id_current);
                     continue;
-            }
-             //freq_per_id[id_current]++;
-            if ((cnt_words_processed % 500000) == 0)
-                std::cerr<<"bgrams "<<cnt_words_processed/1000<<"k of "<<vocab.cnt_words_processed/1000<<"k (" <<100.0*cnt_words_processed/vocab.cnt_words_processed<<"%)\n";
-            cb.push_back(id_current);
-            //auto i = cb.begin();
-            auto last = cb[cb.size()-1];
-            for (size_t j=0;j<cb.size()-1;j++)
+                }
+
+//            if (id_current>=0)
             {
-                //std::cerr<<"accing "<<last<<" - "<<cb[j]<<"\n";
-                //std::cerr<<"accing "<<wstring_to_utf8(lst_id2word[last])<<" - "<<wstring_to_utf8(lst_id2word[cb[j]])<<"\n";
-                accumulate(last,cb[j]);
-                accumulate(cb[j],last);
-             }
+                //freq_per_id[id_current]++;
+                if ((cnt_words_processed % 500000) == 0)
+                    std::cerr<<"bgrams "<<cnt_words_processed/1000<<"k of "<<vocab.cnt_words_processed/1000<<"k (" <<100.0*cnt_words_processed/vocab.cnt_words_processed<<"%)\n";
+                 cb.push_back(id_current);
+                //auto i = cb.begin();
+                auto last = cb[cb.size()-1];
+                for (size_t j=0;j<cb.size()-1;j++)
+                {
+
+                    //std::cerr<<"accing "<<last<<" - "<<cb[j]<<"\n";
+                    //std::cerr<<"accing "<<wstring_to_utf8(lst_id2word[last])<<" - "<<wstring_to_utf8(lst_id2word[cb[j]])<<"\n";
+                    accumulate(last,cb[j]);
+                    accumulate(cb[j],last);
+                }
+            }
         }
     }
+    //the rest of the list
+    /*for (uint64_t i =0 ; i<size_window; i++) 
+    {
+        cb.push_back(-1);
+        auto it = cb.begin();
+        auto first = *it;
+        for (size_t j=1;j<cb.size();j++)
+        {
+            accumulate(first,cb[j]);
+            accumulate(cb[j],first);
+        }
+    }
+    */
 }
 
 struct window_params
@@ -111,26 +128,26 @@ int main(int argc, char * argv[])
     Options options = ProcessOptions(argc,argv);
     auto str_path_in = options.path_in.string();
     auto path_out=options.path_out;
- 
-    std::cerr<<"loading vocabulary\n";
-    std::wifstream infile((path_out / boost::filesystem::path("ids")).string());
-    std::locale locale("en_US.UTF8");
-    infile.imbue(locale);
-
-    std::wstring line;
-   // boost::char_separator<wchar_t> sep(L"\t");
-    while (std::getline(infile, line))
+    if (boost::filesystem::create_directory(path_out))
     {
-        //std::cerr<<wstring_to_utf8(line)<<"\n";
-        std::vector<std::wstring> tokens;
-        boost::split(tokens, line, boost::is_any_of(L"\t"));
-        Index id= stoi(tokens[1]);
-        //std::cerr<<id<<"\n";
-        vocab.tree.set_id(tokens[0].c_str(),id);    
+        std::cerr << "creating target directory\n";
     }
-//    freq_per_id.resize(vocab.cnt_words);
-    vocab.dump_ids("test_ids");
-    return 0;
+    provenance = std::string();
+    provenance += "collected on " + get_str_time();
+    provenance += "source corpus : " + str_path_in + "\n";
+
+    std::cerr<<"assigning ids\n";
+    vocab.read_from_dir(str_path_in);
+
+    provenance = provenance + "words in corpus : "+ FormatHelper::ConvertToStr(vocab.cnt_words_processed)+"\n";
+    provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
+    
+    vocab.reduce(options.min_frequency);
+    provenance=provenance+"minimal frequency: "+FormatHelper::ConvertToStr(options.min_frequency)+"\n";
+    //provenance = provenance + "words in corpus : "+ FormatHelper::ConvertToStr(vocab.cnt_words_processed)+"\n";
+    provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
+
+    std::cerr<<"creating list of frequencies\n";
 
     freq_per_id.resize(vocab.cnt_words);
     lst_id2word.resize(vocab.cnt_words);
@@ -150,6 +167,8 @@ int main(int argc, char * argv[])
     write_value_to_file((path_out / boost::filesystem::path("cnt_words")).string(),vocab.cnt_words_processed);
     write_vector_to_file((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id);
 
+    write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
+   /*
     if (options.size_window<2)
         {
             std::cerr<<"window size <=1 - nothing else to be done! quiting...\n";
@@ -165,11 +184,12 @@ int main(int argc, char * argv[])
     std::cerr<<"dumping results to disk\n";
 
     dump_crs_bin(path_out.string());
-        write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
+    write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
         dump_crs(path_out.string());
         write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string());
     }
+    */
     return 0;
 }
