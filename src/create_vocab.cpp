@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
         std::cerr << "creating target directory\n";
     }
     provenance = std::string();
-    provenance += "collected on " + get_str_time();
+    provenance += "vocab collected on " + get_str_time();
     provenance += "source corpus : " + str_path_in + "\n";
 
     std::cerr<<"assigning ids\n";
@@ -143,7 +143,7 @@ int main(int argc, char * argv[])
     provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
     
     vocab.reduce(options.min_frequency);
-    provenance=provenance+"minimal frequency: "+FormatHelper::ConvertToStr(options.min_frequency)+"\n";
+    provenance=provenance+"filtered with minimal frequency: "+FormatHelper::ConvertToStr(options.min_frequency)+"\n";
     //provenance = provenance + "words in corpus : "+ FormatHelper::ConvertToStr(vocab.cnt_words_processed)+"\n";
     provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
 
@@ -168,6 +168,8 @@ int main(int argc, char * argv[])
     write_vector_to_file((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id);
 
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
+
+    //vocab.tree.dump_dot((path_out / boost::filesystem::path("tree.dot")).string());
    /*
     if (options.size_window<2)
         {

@@ -22,7 +22,7 @@ public:
     TernaryTreeNode * right;
     T data;
     Index id;
-    TernaryTreeNode():left(NULL),down(NULL),right(NULL),data(0){}
+    TernaryTreeNode():left(NULL),down(NULL),right(NULL),data(0),id(-1){}
 };
 
 class TernaryTree

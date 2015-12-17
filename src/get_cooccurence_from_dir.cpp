@@ -125,9 +125,10 @@ int main(int argc, char * argv[])
         std::vector<std::wstring> tokens;
         boost::split(tokens, line, boost::is_any_of(L"\t"));
         Index id= stoi(tokens[1]);
-        //std::cerr<<id<<"\n";
+        //std::cerr<<"loading "<<wstring_to_utf8(tokens[0])<<" - "<<id<<"\n";
         vocab.tree.set_id(tokens[0].c_str(),id);    
     }
+    //vocab.tree.dump_dot("test_tree.dot");
 //    freq_per_id.resize(vocab.cnt_words);
     //vocab.dump_ids("test_ids");
     std::cerr<<"loading frequencies\n";
@@ -136,9 +137,11 @@ int main(int argc, char * argv[])
     vocab.cnt_words=freq_per_id.size();
     lst_id2word.resize(freq_per_id.size());
     vocab.populate_ids(lst_id2word);
-    for (Index i=0; i<freq_per_id.size(); i++)
-        std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<"\n";
-    return 0;
+    //for (size_t i=0; i<freq_per_id.size(); i++)
+      //  std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<"\n";
+
+    std::ifstream f_prov((path_out / boost::filesystem::path("provenance.txt")).string());
+    provenance = std::string((std::istreambuf_iterator<char>(f_prov)), std::istreambuf_iterator<char>());
 
     if (options.size_window<2)
         {
@@ -146,16 +149,19 @@ int main(int argc, char * argv[])
             return 0;
         }
 
+    provenance += "cooccurrences collected on " + get_str_time();
+    provenance += "source corpus : " + str_path_in + "\n";
+
     std::cerr<<"extracting bigrams\n";
     counters.resize(vocab.cnt_words);
     provenance+="windows size : "+FormatHelper::ConvertToStr(options.size_window);
-    provenance+="\nfrequency weightening : PMI";
+    provenance+="\nfrequency weightening : PMI\n";
     load_bigrams(str_path_in,options);
 
     std::cerr<<"dumping results to disk\n";
 
     dump_crs_bin(path_out.string());
-        write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
+    write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
         dump_crs(path_out.string());

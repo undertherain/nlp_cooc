@@ -11,7 +11,7 @@
 //std::list<std::string> lst_test = {"ca","ac","ab","az","a","aaa"};
 //std::list<std::string> lst_test = {"k","b","a","ba","c","z"};
 //std::list<std::string> lst_test = {"c","ba","ba","a","a","xa","xa","z","z"};
-std::list<std::wstring> lst_test = {L"c",L"b",L"a",L"b"};
+std::list<std::wstring> lst_test = {L"c",L"b",L"a",L"b",L"."};
 //std::list<std::wstring> lst_test = {L"c"};
 //std::list<std::string> lst_test = {"c","a","a"};
 
@@ -29,7 +29,6 @@ int main()
 	{
 		std::cerr<<"id of "<<wstring_to_utf8(t)<<"\t is "<<tree.get_id(t.c_str())<<"\n";
 	}
-
 
 	std::wstring str=L"nonexisant";
 	Index id = tree.get_id(str.c_str());

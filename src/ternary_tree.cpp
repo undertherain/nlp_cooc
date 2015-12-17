@@ -170,9 +170,10 @@ ActionFileWriteDot::~ActionFileWriteDot()
     }
     
 void ActionFileWriteDot::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
-    {
+{
     std::wstring label(buffer,buffer+depth+1);
-    file<<wstring_to_utf8(label)<<" [label="<<node->c<<"];\n";
+    //file<<wstring_to_utf8(label)<<" [label="<<node->c<<"];\n";
+    file<<wstring_to_utf8(label)<<" [label="<<wstring_to_utf8(label)<<"];\n";
     if (node->left!=NULL)
     {
         std::wstring label2=label;
