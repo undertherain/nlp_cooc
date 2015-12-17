@@ -53,7 +53,6 @@ obj/ternary_tree.o: src/ternary_tree.cpp
 bin/sparse: src/sparse.cpp
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
-#tests
 tests: bin/test_vocab bin/test_tree
 
 bin/test_vocab: src/tests/test_vocab.cpp obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o

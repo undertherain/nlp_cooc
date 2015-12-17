@@ -7,12 +7,12 @@
 #include <sstream>
 #include <exception>
 #include <cstring>
-#include <boost/tokenizer.hpp>
+//#include <boost/tokenizer.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/filesystem.hpp>
 #include <map>
-#include <set>
-#include <unordered_map>
+//#include <set>
+//#include <unordered_map>
 #include <cstdarg>
 #include "options.hpp"
 #include "basic_utils/stream_reader.hpp"
