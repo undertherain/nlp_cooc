@@ -1,3 +1,47 @@
+size_t get_cnt_lines(const std::string &name_file)
+{
+    throw (std::runtime_error("not yet implemented"));
+    return 0;
+}
+
+size_t get_filesize(const std::string & name_file)
+{
+    std::ifstream in(name_file, std::ifstream::ate | std::ifstream::binary);
+    if (!in.is_open())
+    {
+        std::string message="get_filesize() can not open file ";
+        throw std::runtime_error (message+name_file);
+    }
+    return in.tellg(); 
+}
+
+template <typename T>
+size_t load_from_raw(std::string name_file,T*&buffer)
+{
+    size_t size_file = get_filesize(name_file);
+    size_t cnt_items = size_file / sizeof(T);
+    if (buffer==NULL)
+        buffer = new T[cnt_items];
+    std::ifstream is(name_file, std::ifstream::in | std::ifstream::binary);
+    is.read(reinterpret_cast<char *>(buffer),size_file);
+    return cnt_items;
+}
+
+template <typename T>
+size_t load_vector_from_raw(std::string name_file,std::vector<T>& buffer)
+{
+    size_t size_file = get_filesize(name_file);
+    size_t cnt_items = size_file / sizeof(T);
+    buffer.resize(cnt_items);
+
+    std::ifstream is(name_file, std::ifstream::in | std::ifstream::binary);
+    is.read(reinterpret_cast<char *>(&buffer[0]),size_file);
+    return cnt_items;
+}
+
+
+
+
 template<typename Type> 
 void write_value_to_file(std::string name,Type value)
 {

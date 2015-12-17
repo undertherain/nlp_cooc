@@ -33,7 +33,7 @@ std::vector<Index> freq_per_id;
 std::vector<std::wstring> lst_id2word;
 std::vector<Accumulator> counters;
 Vocabulary vocab;
-#include "basic_utils/write_data.hpp"
+#include "basic_utils/file_io.hpp"
 
 void accumulate(Accumulator & ac,Index w)
 {
@@ -129,26 +129,16 @@ int main(int argc, char * argv[])
         vocab.tree.set_id(tokens[0].c_str(),id);    
     }
 //    freq_per_id.resize(vocab.cnt_words);
-    vocab.dump_ids("test_ids");
-    return 0;
-
-    freq_per_id.resize(vocab.cnt_words);
-    lst_id2word.resize(vocab.cnt_words);
-    std::fill (freq_per_id.begin(),freq_per_id.end(),0);   
-    std::cerr<<"populating frequencies\n";
-    vocab.populate_frequency(freq_per_id);
-    vocab.reassign_ids(freq_per_id);
-    vocab.populate_frequency(freq_per_id);
+    //vocab.dump_ids("test_ids");
+    std::cerr<<"loading frequencies\n";
+    load_vector_from_raw((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id); 
+    std::cerr<<freq_per_id.size()<<" words in total, max freq = " << freq_per_id[0] << "\n";
+    vocab.cnt_words=freq_per_id.size();
+    lst_id2word.resize(freq_per_id.size());
     vocab.populate_ids(lst_id2word);
-    
-    std::cerr<<"dumping ids and frequencies\n";
-
-    vocab.dump_ids((path_out / boost::filesystem::path("ids")).string());
-    vocab.dump_frequency((path_out / boost::filesystem::path("frequencies")).string());
-
-    write_value_to_file((path_out / boost::filesystem::path("cnt_unique_words")).string(),vocab.cnt_words);
-    write_value_to_file((path_out / boost::filesystem::path("cnt_words")).string(),vocab.cnt_words_processed);
-    write_vector_to_file((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id);
+    for (Index i=0; i<freq_per_id.size(); i++)
+        std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<"\n";
+    return 0;
 
     if (options.size_window<2)
         {

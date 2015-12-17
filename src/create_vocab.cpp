@@ -32,7 +32,7 @@ std::vector<Index> freq_per_id;
 std::vector<std::wstring> lst_id2word;
 std::vector<Accumulator> counters;
 Vocabulary vocab;
-#include "basic_utils/write_data.hpp"
+#include "basic_utils/file_io.hpp"
 
 void accumulate(Accumulator & ac,Index w)
 {
