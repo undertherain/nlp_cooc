@@ -50,32 +50,29 @@ void Vocabulary::read_from_dir(std::string dir)
 
 void Vocabulary::read_from_precomputed(std::string dir)
 {
+    load_vector_from_raw((dir / boost::filesystem::path("freq_per_id")).string(),freq_per_id); 
+    cnt_words=freq_per_id.size();
+    lst_id2word.resize(cnt_words);
+
 	std::wifstream infile((dir / boost::filesystem::path("ids")).string());
     std::locale locale("en_US.UTF8");
     infile.imbue(locale);
-
     std::wstring line;
     while (std::getline(infile, line))
     {
         std::vector<std::wstring> tokens;
         boost::split(tokens, line, boost::is_any_of(L"\t"));
         Index id= stoi(tokens[1]);
-        //std::cerr<<"loading "<<wstring_to_utf8(tokens[0])<<" - "<<id<<"\n";
-        tree.set_id(tokens[0].c_str(),id);    
+		lst_id2word[id]=tokens[0];
     }
+    for (size_t i=0; i<cnt_words; i++)
+        tree.set_id(lst_id2word[i].c_str(),i);    
     //vocab.tree.dump_dot("test_tree.dot");
     //vocab.dump_ids("test_ids");
-    std::cerr<<"loading frequencies\n";
-    load_vector_from_raw((dir / boost::filesystem::path("freq_per_id")).string(),freq_per_id); 
     std::cerr<<freq_per_id.size()<<" words in total, max freq = " << freq_per_id[0] << "\n";
-    cnt_words=freq_per_id.size();
-    lst_id2word.resize(cnt_words);
-    populate_ids();
     cnt_words_processed=read_int((dir / boost::filesystem::path("cnt_words")).string());
     //for (size_t i=0; i<freq_per_id.size(); i++)
       //  std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<" "<<freq_per_id[i]<<"\n";
-
-
 }
 
 
