@@ -72,8 +72,8 @@ void Vocabulary::read_from_precomputed(std::string dir)
     lst_id2word.resize(cnt_words);
     populate_ids();
     cnt_words_processed=read_int((dir / boost::filesystem::path("cnt_words")).string());
-    for (size_t i=0; i<freq_per_id.size(); i++)
-        std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<" "<<freq_per_id[i]<<"\n";
+    //for (size_t i=0; i<freq_per_id.size(); i++)
+      //  std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<" "<<freq_per_id[i]<<"\n";
 
 
 }

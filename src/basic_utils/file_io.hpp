@@ -9,8 +9,7 @@ typedef std::map<Index,Index> Accumulator;
 size_t get_cnt_lines(const std::string &name_file);
 size_t read_int(const std::string &name_file);
 size_t get_filesize(const std::string & name_file);
-void dump_crs(std::string path_out,std::vector<Accumulator> const & counters,Vocabulary const & vocab);
-void dump_crs_bin(std::string path_out,std::vector<Accumulator> const & counters,Vocabulary const & vocab);
+void dump_crs(std::string path_out,std::vector<Accumulator> const & counters,Vocabulary const & vocab, bool binary);
 void write_cooccurrence_text(std::string name_file,std::vector<Accumulator> const & counters,Vocabulary const & vocab);
 
 template <typename T>

@@ -132,11 +132,11 @@ int main(int argc, char * argv[])
 
     std::cerr<<"dumping results to disk\n";
 
-    dump_crs_bin(path_out.string(),counters,vocab);
+    dump_crs(path_out.string(),counters,vocab,true);
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
-        dump_crs(path_out.string(),counters,vocab);
+        dump_crs(path_out.string(),counters,vocab,false);
         write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string(),counters,vocab);
     }
     return 0;
