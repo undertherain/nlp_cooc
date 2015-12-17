@@ -1,3 +1,6 @@
+#ifndef VOCABULARY
+#define VOCABULARY
+
 #include <iostream>
 #include <string>  
 #include <locale>
@@ -13,6 +16,8 @@ class Vocabulary
 {
 	std::set<std::wstring> stopwords;
 public:
+    std::vector<std::wstring> lst_id2word;
+    std::vector<Index> freq_per_id;
     TernaryTree tree;
     size_t cnt_words;
     size_t cnt_words_processed;
@@ -20,11 +25,14 @@ public:
     Vocabulary();
     bool is_word_valid(std::wstring const & w);
     void read_from_dir(std::string dir);
+    void read_from_precomputed(std::string dir);
     void dump_frequency(const std::string & name_file) const;
     void dump_ids(const std::string & name_file) const;
-    void populate_frequency(std::vector<Index> & lst_frequency )const;
-    void populate_ids(std::vector<std::wstring> & lst_id2word ) const;
+    void populate_frequency();
+    void populate_ids();
     void reassign_ids(std::vector<Index> const & lst_frequency);
-	int64_t get_id(const wchar_t * str);
+	int64_t get_id(const wchar_t * str) ;
 	void reduce(int64_t threshold=5);
 };
+
+#endif

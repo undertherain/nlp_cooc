@@ -10,7 +10,6 @@
 #include <boost/tokenizer.hpp>
 #include <boost/circular_buffer.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/algorithm/string.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -26,11 +25,10 @@ std::string provenance;
 #include "vocabulary.hpp"
 
 Index cnt_words_processed;
+//Index cnt_words_processed_old;
+
 Index cnt_bigrams;
 typedef std::map<Index,Index> Accumulator;
-//std::map<Index,Accumulator> counters;
-std::vector<Index> freq_per_id;
-std::vector<std::wstring> lst_id2word;
 std::vector<Accumulator> counters;
 Vocabulary vocab;
 #include "basic_utils/file_io.hpp"
@@ -113,33 +111,7 @@ int main(int argc, char * argv[])
     auto path_out=options.path_out;
  
     std::cerr<<"loading vocabulary\n";
-    std::wifstream infile((path_out / boost::filesystem::path("ids")).string());
-    std::locale locale("en_US.UTF8");
-    infile.imbue(locale);
-
-    std::wstring line;
-   // boost::char_separator<wchar_t> sep(L"\t");
-    while (std::getline(infile, line))
-    {
-        //std::cerr<<wstring_to_utf8(line)<<"\n";
-        std::vector<std::wstring> tokens;
-        boost::split(tokens, line, boost::is_any_of(L"\t"));
-        Index id= stoi(tokens[1]);
-        //std::cerr<<"loading "<<wstring_to_utf8(tokens[0])<<" - "<<id<<"\n";
-        vocab.tree.set_id(tokens[0].c_str(),id);    
-    }
-    //vocab.tree.dump_dot("test_tree.dot");
-//    freq_per_id.resize(vocab.cnt_words);
-    //vocab.dump_ids("test_ids");
-    std::cerr<<"loading frequencies\n";
-    load_vector_from_raw((path_out / boost::filesystem::path("freq_per_id")).string(),freq_per_id); 
-    std::cerr<<freq_per_id.size()<<" words in total, max freq = " << freq_per_id[0] << "\n";
-    vocab.cnt_words=freq_per_id.size();
-    lst_id2word.resize(freq_per_id.size());
-    vocab.populate_ids(lst_id2word);
-    //for (size_t i=0; i<freq_per_id.size(); i++)
-      //  std::cerr<<i<<" - "<<wstring_to_utf8(lst_id2word[i])<<"\n";
-
+    vocab.read_from_precomputed(path_out.string());
     std::ifstream f_prov((path_out / boost::filesystem::path("provenance.txt")).string());
     provenance = std::string((std::istreambuf_iterator<char>(f_prov)), std::istreambuf_iterator<char>());
 
@@ -160,12 +132,12 @@ int main(int argc, char * argv[])
 
     std::cerr<<"dumping results to disk\n";
 
-    dump_crs_bin(path_out.string());
+    dump_crs_bin(path_out.string(),counters,vocab);
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
-        dump_crs(path_out.string());
-        write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string());
+        dump_crs(path_out.string(),counters,vocab);
+        write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string(),counters,vocab);
     }
     return 0;
 }

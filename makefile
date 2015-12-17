@@ -14,10 +14,10 @@ dummy_bin_folder := $(shell mkdir -p bin)
 bin/BNC_to_text: src/BNC_to_text.cpp
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
-bin/get_cooccurence_from_dir: obj/get_cooccurence_from_dir.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o
+bin/get_cooccurence_from_dir: obj/get_cooccurence_from_dir.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o obj/file_io.o
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
-bin/create_vocab: obj/create_vocab.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o
+bin/create_vocab: obj/create_vocab.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o obj/file_io.o
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
 bin/my_w2v: obj/my_w2v.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o
@@ -44,6 +44,9 @@ obj/buffer_byte.o: src/basic_utils/buffer_byte.cpp
 obj/stream_reader.o: src/basic_utils/stream_reader.cpp
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
+obj/file_io.o: src/basic_utils/file_io.cpp
+	g++  $^ $(CXXFLAGS) -c -o $@ 
+
 obj/ternary_tree.o: src/ternary_tree.cpp
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
@@ -63,11 +66,8 @@ obj/test_tree.o: src/tests/test_tree.cpp
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
 test: all
-	./bin/get_cooccurence_from_dir ./dirtest/test_minimal/ /tmp --minimal_frequency 1
-	cat /tmp/frequencies
-	echo
-	./bin/get_cooccurence_from_dir ../data/test_corpora/rus/sep /tmp --minimal_frequency 1
-	cat /tmp/frequencies
+	./bin/create_vocab ../data/test_corpora/eng/min/ temp/ --minimal_frequency=1
+	./bin/get_cooccurence_from_dir ../data/test_corpora/eng/min/ temp --window_size=2 --debug=true 
 
 clean:
 	rm -f obj/*.o
