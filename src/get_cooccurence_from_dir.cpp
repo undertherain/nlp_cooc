@@ -130,6 +130,8 @@ int main(int argc, char * argv[])
     std::cerr<<"extracting bigrams\n";
     counters.resize(vocab.cnt_words);
     provenance+="windows size : "+FormatHelper::ConvertToStr(options.size_window);
+    provenance+="\nobey sentence boundaries : ";
+    provenance+=options.obey_sentence_bounds?"yes":"no";
     provenance+="\nfrequency weightening : PMI\n";
     load_bigrams(str_path_in,options);
 
