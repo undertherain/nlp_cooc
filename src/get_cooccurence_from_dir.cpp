@@ -69,10 +69,13 @@ void load_bigrams(std::string str_path_in,const Options & options)
             Index id_current = vocab.get_id(word);
             if (word[0]==L'.')      
             {
-                id_current=-1;
-                for (size_t j=1;j<cb.size();j++)
-                    cb.push_back(id_current);
-                    continue;
+                if (options.obey_sentence_bounds)
+                {
+                    id_current=-1;
+                    for (size_t j=1;j<cb.size();j++)
+                        cb.push_back(id_current);
+                }
+                continue;
             }
              //freq_per_id[id_current]++;
             if ((cnt_words_processed % 500000) == 0)
