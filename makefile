@@ -2,7 +2,7 @@
 
 CXX = g++
 LIBS = -lboost_filesystem -lboost_system -lboost_program_options
-CXXFLAGS = -Wall -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-color=auto -fopenmp -Wno-error=narrowing
+CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-color=auto -fopenmp -Wno-error=narrowing
 BUILD_NUMBER_FILE = build-number.txt
 
 all: bin/get_cooccurence_from_dir bin/create_vocab
