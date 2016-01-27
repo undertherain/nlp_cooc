@@ -6,7 +6,7 @@
 #define MAX_STR_SIZE  15000
 #endif
 
-const char separators[]=" .,:;!?()[]-\t\"'";
+const char separators[]=" .,:;!?()[]\t\"'";
   
 std::string wstring_to_utf8 (const std::wstring& str);
 inline void trim3(std::wstring & str);
