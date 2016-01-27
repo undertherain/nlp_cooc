@@ -63,7 +63,7 @@ int DirReader::check_eof_and_advance()
 
 bool DirReader::is_separator(wchar_t c)
 {
-    for (size_t i=0;i<15;i++)
+    for (size_t i=0;i<14;i++)
         if (c==separators[i]) return true;
     if (c==13) return true;
     if (c==10) return true;
