@@ -51,7 +51,7 @@ byte & BufferByte::operator[](const Index idx) const
         throw std::exception();
     }//todo remove to debug
     return buffer[idx];
-};
+}
 
 //global utils---------------------
 Index LoadBytesFromFile(byte ** buffer,std::string nameFileIn)
