@@ -38,6 +38,7 @@ void Vocabulary::read_from_dir(std::string dir)
 	wchar_t * word;
 	while ((word=dr.get_word())!=NULL )
 	{
+        //std::cerr<<wstring_to_utf8(std::wstring(word))<<"\n";
 		if (is_word_valid(std::wstring(word)))
 		{
 			tree.set_id_and_increment(word);	

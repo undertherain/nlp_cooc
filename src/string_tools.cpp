@@ -40,7 +40,11 @@ wchar_t * clean_ptr(wchar_t * str)
   if (str==NULL) return NULL;
   static const std::locale locale("en_US.UTF8");
   unsigned int length = wcslen(str);
-  if ((length==1) && (*str==L'.')) return str;
+  
+  if (length==1) 
+    if (enders.find(str[0]) != enders.end())
+     return str;
+
   wchar_t * new_ptr = str;
   while ((!std::isalpha(new_ptr[0],locale)) && (new_ptr<str+length)) new_ptr++;
   wchar_t * end_ptr=str+length;
@@ -51,10 +55,10 @@ wchar_t * clean_ptr(wchar_t * str)
   while (((!std::isalpha(*end_ptr,locale)) || (*end_ptr==160))&& (end_ptr>new_ptr)) 
       end_ptr--;
   *(end_ptr+1)=0;
-  for (auto ptr=new_ptr;ptr<end_ptr;ptr++)
-  {
-    if (*ptr==L'ё') *ptr=L'е';
-  }
+  //for (auto ptr=new_ptr;ptr<end_ptr;ptr++)
+  //{
+   // if (*ptr==L'ё') *ptr=L'е';
+  //}
 //  }
   return new_ptr;
 }

@@ -64,9 +64,11 @@ bin/test_tree: obj/test_tree.o obj/string_tools.o obj/ternary_tree.o
 obj/test_tree.o: src/tests/test_tree.cpp 
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
+TEST_CORP = ../data/test_corpora/rus/punctuation/
+
 test: all
-	./bin/create_vocab ../data/test_corpora/eng/min/ temp/ --minimal_frequency=1
-	./bin/get_cooccurence_from_dir ../data/test_corpora/eng/min/ temp --window_size=2 --debug=true 
+	./bin/create_vocab $(TEST_CORP) temp/ --minimal_frequency=1
+	./bin/get_cooccurence_from_dir $(TEST_CORP) temp/ --window_size=2 --debug=true 
 
 clean:
 	rm -f obj/*.o

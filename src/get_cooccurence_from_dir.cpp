@@ -67,7 +67,7 @@ void load_bigrams(std::string str_path_in,const Options & options)
             //std::cerr<<wstring_to_utf8(std::wstring(word))<<"\n";
             cnt_words_processed++;
             Index id_current = vocab.get_id(word);
-            if ( (word[0]==L'.') ||  (word==std::wstring(L"eos")) ||  (word==std::wstring(L"eop")) )
+            if ( (word[0]==L'.') ||  (word==std::wstring(L"!")) ||  (word==std::wstring(L"?")) )
             {
                 if (options.obey_sentence_bounds)
                 {

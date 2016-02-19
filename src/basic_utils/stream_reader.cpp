@@ -2,6 +2,7 @@
 #include <boost/filesystem.hpp>
 #include "stream_reader.hpp"
 
+
 DirReader::DirReader(std::string _dir):dir(_dir,boost::filesystem::symlink_option::recurse),initial(_dir,boost::filesystem::symlink_option::recurse),locale(std::locale("en_US.UTF8"))
 {
         //file_in.open(dir->path().string());
@@ -121,9 +122,10 @@ wchar_t * DirReader::get_word_raw()
                 pos_buf=0;
                 continue;
             }
-            if (ch==L'.')
+            if (enders.find(ch) != enders.end())
             {
-                myqueue.push(std::wstring(L"."));
+                myqueue.push(std::wstring(1,ch));
+ //               std::cerr<<"this is ender, queing "<< wstring_to_utf8(std::wstring(1,ch))<<"\n";
             }
             return buffer;
         }

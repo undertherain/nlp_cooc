@@ -1,5 +1,6 @@
 #pragma once
 #include <list>
+#include <set>
 //#include <fstream>
 
 #if !defined(MAX_STR_SIZE)
@@ -7,7 +8,8 @@
 #endif
 
 const char separators[]=" .,:;!?()[]\t\"'";
-  
+const std::set<wchar_t> enders = {L'.',L'?',L'!',L'…'};
+
 std::string wstring_to_utf8 (const std::wstring& str);
 inline void trim3(std::wstring & str);
 inline void clean(std::string & str);
