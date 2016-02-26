@@ -5,4 +5,4 @@
 %}
 
 /* Let's just grab the original header file here */
-#include "../ternary_tree.hpp"
+%include "../ternary_tree.hpp"

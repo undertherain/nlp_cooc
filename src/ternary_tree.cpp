@@ -2,7 +2,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <codecvt>
-#include <locale>
 #include "ternary_tree.hpp"
 
 //#define MAX_STR_SIZE  1500
@@ -22,7 +21,6 @@ void TernaryTree::set_id(const wchar_t * str,Index id)
     node->data=1;
     node->id=id;    
 }
-
 
 TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
 {
@@ -57,7 +55,6 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
 //            std::cerr<<"moving down\n";
             depth++;
             c=str[depth];
-           // continue;
         } else
         if (c<node->c)
         {
@@ -69,7 +66,6 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
             }
             node=node->left;
 //            std::cerr<<"moving left\n";
-           // continue;
         } else
         if (c>node->c)
         {
@@ -80,7 +76,6 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
             }
             node=node->right;
 //            std::cerr<<"moving right\n";
-            //continue;
         }
         //if (depth>=strlen(str)) is_done=true;
         if ((depth>=wcslen(str)-1)&&(node->c==c)) is_done=true;
@@ -122,14 +117,7 @@ Index TernaryTree::get_id(const wchar_t * str)
     //std::cerr<<"found at depth "<<depth<<" id = "<<node->id-1<<"\n";
     return node->id;
 }
-/*
 
-class Action {
-public:
-    virtual void operator()(TernaryTreeNode<Index>* node,unsigned int depth)=0;
-};
-
-*/
 
 ActionFile::ActionFile(std::string name_file)
     {

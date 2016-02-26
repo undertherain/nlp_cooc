@@ -2,7 +2,7 @@
 
 CXX = g++
 LIBS = -lboost_filesystem -lboost_system -lboost_program_options
-CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-color=auto -fopenmp -Wno-error=narrowing
+CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-color=auto -fopenmp -Wno-error=narrowing -fPIC
 BUILD_NUMBER_FILE = build-number.txt
 
 all: bin/get_cooccurence_from_dir bin/create_vocab
@@ -63,6 +63,7 @@ bin/test_tree: obj/test_tree.o obj/string_tools.o obj/ternary_tree.o
 
 obj/test_tree.o: src/tests/test_tree.cpp 
 	g++  $^ $(CXXFLAGS) -c -o $@ 
+
 
 TEST_CORP = ../data/test_corpora/rus/punctuation/
 
