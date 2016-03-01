@@ -8,6 +8,7 @@ clean:
 	rm *.so 2>/dev/null || true
 	rm ternary_tree.py 2>/dev/null || true
 	rm ternary_tree_wrap.cxx 2>/dev/null || true
+	rm -rf __pycache__ || true
 
 test:
 	python3 test.py
