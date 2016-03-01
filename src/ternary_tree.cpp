@@ -5,9 +5,9 @@
 #include "ternary_tree.hpp"
 
 //#define MAX_STR_SIZE  1500
-wchar_t  buffer[MAX_STR_SIZE];
+char  buffer[MAX_STR_SIZE];
 
-Index TernaryTree::set_id_and_increment(const wchar_t * str)
+Index TernaryTree::set_id_and_increment(const char * str)
 {
     auto node = get_node_or_create(str);
     if (!node->data) node->id=id_global++;
@@ -15,14 +15,14 @@ Index TernaryTree::set_id_and_increment(const wchar_t * str)
     return node->id;    
 }
 
-void TernaryTree::set_id(const wchar_t * str,Index id)
+void TernaryTree::set_id(const char * str,Index id)
 {
     auto node = get_node_or_create(str);
     node->data=1;
     node->id=id;    
 }
 
-TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
+TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
 {
     if (tree==NULL)
     { 
@@ -34,14 +34,14 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
     auto node=tree;
     unsigned int depth=0;
     bool is_done=false;
-    if ((wcslen(str)==1)&&(node->c==str[0])) is_done=true;
+    if ((strlen(str)==1)&&(node->c==str[0])) is_done=true;
     while (!is_done)
     {
         if (depth>=MAX_STR_SIZE) {
             std::cerr<<"string too long in tree, aborting \n"; 
             throw std::exception();
         }
-        wchar_t c=str[depth];
+        char c=str[depth];
 //        std::cerr<<"depth = "<<depth<<"\tnode.c = "<<node->c<<"\tc = "<<c<<"\n";
         if (c==node->c)
         {
@@ -78,13 +78,13 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const wchar_t * str)
 //            std::cerr<<"moving right\n";
         }
         //if (depth>=strlen(str)) is_done=true;
-        if ((depth>=wcslen(str)-1)&&(node->c==c)) is_done=true;
+        if ((depth>=strlen(str)-1)&&(node->c==c)) is_done=true;
     }
     return node;
 }
 
 
-Index TernaryTree::get_id(const wchar_t * str)
+Index TernaryTree::get_id(const char * str)
 {
     auto node=tree;
     if (node==NULL) return -1;
@@ -92,10 +92,10 @@ Index TernaryTree::get_id(const wchar_t * str)
     bool is_done=false;
     while (!is_done)
     {
-        wchar_t c=str[depth];
+        char c=str[depth];
         if (c==node->c)
         {
-            if (depth>=wcslen(str)-1) return node->id;
+            if (depth>=strlen(str)-1) return node->id;
             if (node->down==NULL) return -1;
             node=node->down;
             depth++;
@@ -112,7 +112,7 @@ Index TernaryTree::get_id(const wchar_t * str)
         }
         c=str[depth];
         //std::cerr<<"depth = "<<depth<<" node.c = "<<node->c<<"\n";
-        if ((depth>=wcslen(str)-1)&&(node->c==c)) is_done=true;
+        if ((depth>=strlen(str)-1)&&(node->c==c)) is_done=true;
     }
     //std::cerr<<"found at depth "<<depth<<" id = "<<node->id-1<<"\n";
     return node->id;
@@ -132,14 +132,16 @@ ActionFile::~ActionFile()
 void ActionFileWriteFrequency::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
     {
     if (node->data)
-        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->data<<"\n";
+//        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->data<<"\n";
+        file<<std::string(buffer,buffer+depth+1)<<"\t"<<node->data<<"\n";
     }
 
 
 void ActionFileWriteId::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
     {
     if (node->data)
-        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->id<<"\n";
+//        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->id<<"\n";
+        file<<std::string(buffer,buffer+depth+1)<<"\t"<<node->id<<"\n";
     }
 
 void ActionCountNodes::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
@@ -159,26 +161,26 @@ ActionFileWriteDot::~ActionFileWriteDot()
     
 void ActionFileWriteDot::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
 {
-    std::wstring label(buffer,buffer+depth+1);
+    std::string label(buffer,buffer+depth+1);
     //file<<wstring_to_utf8(label)<<" [label="<<node->c<<"];\n";
-    file<<wstring_to_utf8(label)<<" [label="<<wstring_to_utf8(label)<<"];\n";
+    file<<label<<" [label="<<label<<"];\n";
     if (node->left!=NULL)
     {
-        std::wstring label2=label;
+        std::string label2=label;
         label2[label2.length()-1]=node->left->c;
-        file<<wstring_to_utf8(label)<<"\t->\t"<<wstring_to_utf8(label2)<<"  [color=blue];\n";
+        file<<label<<"\t->\t"<<label2<<"  [color=blue];\n";
     }
     if (node->down!=NULL)
     {
-        std::wstring label2=label;
+        std::string label2=label;
         label2=label2+node->down->c;
-        file<<wstring_to_utf8(label)<<"\t->\t"<<wstring_to_utf8(label2)<<" [style=dotted];\n";
+        file<<label<<"\t->\t"<<label2<<" [style=dotted];\n";
     }
     if (node->right!=NULL)
     {
-        std::wstring label2=label;
+        std::string label2=label;
         label2[label2.length()-1]=node->right->c;
-        file<<wstring_to_utf8(label)<<"\t->\t"<<wstring_to_utf8(label2)<<"[color=red] ;\n";
+        file<<label<<"\t->\t"<<label2<<"[color=red] ;\n";
     }
         
     }
@@ -209,7 +211,7 @@ void ActionPopulateFrequency::operator()(TernaryTreeNode<Index>* node,unsigned i
 void ActionPopulateIds::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
 {
     if (node->id>=0)
-    lst_id2word[node->id]=std::wstring(buffer,buffer+depth+1);
+    lst_id2word[node->id]=std::string(buffer,buffer+depth+1);
 }
 
 
@@ -260,7 +262,7 @@ void TernaryTree::populate_frequency(std::vector<Index> & lst_frequency ) const
     visit_recursively(tree,0,a);
 }
 
-void TernaryTree::populate_ids(std::vector<std::wstring> & lst_id2word ) const
+void TernaryTree::populate_ids(std::vector<std::string> & lst_id2word ) const
 {
     ActionPopulateIds a(lst_id2word);
     visit_recursively(tree,0,a);

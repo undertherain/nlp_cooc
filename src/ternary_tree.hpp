@@ -16,7 +16,7 @@ template <typename T>
 class TernaryTreeNode
 {
 public:
-    wchar_t c;
+    char c;
     TernaryTreeNode * left;
     TernaryTreeNode * down;
     TernaryTreeNode * right;
@@ -37,17 +37,17 @@ public:
 //        tree->c='m';
     }
 //Index get_value(const TernaryTreeNode<Index> * node, const char * str) ;
-    Index get_id(const wchar_t * str);
-    void set_id(const wchar_t * str,Index id);
-    Index set_id_and_increment(const wchar_t * str);
-    TernaryTreeNode<Index> * get_node_or_create(const wchar_t * str);
+    Index get_id(const char * str);
+    void set_id(const char * str,Index id);
+    Index set_id_and_increment(const char * str);
+    TernaryTreeNode<Index> * get_node_or_create(const char * str);
     void dump_frequency(const std::string & name_file) const;
     void dump_ids(const std::string & name_file) const;
     void dump_dot(const std::string & name_file) const;
     void reassign_ids();
     void reassign_ids_new(std::vector<Index> const  & lst_new_ids);
     void populate_frequency(std::vector<Index> & lst_frequency ) const;
-    void populate_ids(std::vector<std::wstring> & lst_id2word ) const;
+    void populate_ids(std::vector<std::string> & lst_id2word ) const;
     size_t count_nodes() const; 
 };
 
@@ -133,8 +133,8 @@ class ActionPopulateIds: public Action
 {
 public:
     size_t pos;
-    std::vector<std::wstring> & lst_id2word;
-    ActionPopulateIds(std::vector<std::wstring> & _lst_id2word):pos(0), lst_id2word(_lst_id2word){}
+    std::vector<std::string> & lst_id2word;
+    ActionPopulateIds(std::vector<std::string> & _lst_id2word):pos(0), lst_id2word(_lst_id2word){}
     void operator()(TernaryTreeNode<Index>* node,unsigned int depth);
 };
 

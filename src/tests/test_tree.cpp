@@ -11,7 +11,8 @@
 //std::list<std::string> lst_test = {"ca","ac","ab","az","a","aaa"};
 //std::list<std::string> lst_test = {"k","b","a","ba","c","z"};
 //std::list<std::string> lst_test = {"c","ba","ba","a","a","xa","xa","z","z"};
-std::list<std::wstring> lst_test = {L"c",L"b",L"a",L"b",L"."};
+//std::list<std::wstring> lst_test = {L"c",L"b",L"a",L"b",L"."};
+std::list<std::string> lst_test = {"c","b","a","b","."};
 //std::list<std::wstring> lst_test = {L"c"};
 //std::list<std::string> lst_test = {"c","a","a"};
 
@@ -19,18 +20,18 @@ int main()
 {
 	std::cout<<"testing add\n";
 	TernaryTree tree;
-	for (std::wstring t: lst_test)
+	for (std::string t: lst_test)
 	{
-		std::cerr<<"adding "<<wstring_to_utf8(t)<<"\n";
+		//std::cerr<<"adding "<<wstring_to_utf8(t)<<"\n";
 		tree.set_id_and_increment(t.c_str());
 	}
 
-	for (std::wstring t: lst_test)
+	for (std::string t: lst_test)
 	{
-		std::cerr<<"id of "<<wstring_to_utf8(t)<<"\t is "<<tree.get_id(t.c_str())<<"\n";
+		//std::cerr<<"id of "<<wstring_to_utf8(t)<<"\t is "<<tree.get_id(t.c_str())<<"\n";
 	}
 
-	std::wstring str=L"nonexisant";
+	std::string str="nonexisant";
 	Index id = tree.get_id(str.c_str());
 	std::cout<<"\nnonexistant id = " <<id<<"\n";
 	size_t cnt_nodes=tree.count_nodes();
@@ -43,7 +44,7 @@ int main()
 	tree.dump_ids("_ids_reduced");
 	tree.dump_dot("reduced.gv");
 
-	str=L"nonexisant";
+	str="nonexisant";
 	id = tree.get_id(str.c_str());
 	std::cout<<"\nnonexistant id after reduce = " <<id<<"\n";
 
