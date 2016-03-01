@@ -44,7 +44,7 @@ public:
     int64_t set_id_and_increment(const char * str);
     TernaryTreeNode<int64_t> * get_node_or_create(const char * str);
     void dump_frequency(const std::string & name_file) const;
-    void dump_ids(const std::string & name_file) const;
+    void dump_ids(const char * name_file) const;
     void dump_dot(const std::string & name_file) const;
     void reassign_ids();
     void reassign_ids_new(std::vector<int64_t> const  & lst_new_ids);

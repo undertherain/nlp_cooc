@@ -105,7 +105,7 @@ for (size_t first=0;first<counters.size();first++)
        // file<<first.first<<"\t"<<second.first<<"\t"<<second.second<<"\n";
         double v=log2((static_cast<double>(second.second)*vocab.cnt_words_processed)/(vocab.freq_per_id[first]*vocab.freq_per_id[second.first]));
         //file<<first<<"\t"<<second.first<<"\t"<<v<<"\n";
-        file<<wstring_to_utf8(vocab.lst_id2word[first])<<"\t"<<wstring_to_utf8(vocab.lst_id2word[second.first])<<"\t"<<second.second<<"\t"<<v<<"\n"; 
+        file<<vocab.lst_id2word[first]<<"\t"<<vocab.lst_id2word[second.first]<<"\t"<<second.second<<"\t"<<v<<"\n"; 
     }
 }
 

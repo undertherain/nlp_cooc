@@ -16,8 +16,8 @@ class Vocabulary
 {
 	std::set<std::wstring> stopwords;
 public:
-    std::vector<std::wstring> lst_id2word;
-    std::vector<Index> freq_per_id;
+    std::vector<std::string> lst_id2word;
+    std::vector<int64_t> freq_per_id;
     TernaryTree tree;
     size_t cnt_words;
     size_t cnt_words_processed;
@@ -30,7 +30,7 @@ public:
     void dump_ids(const std::string & name_file) const;
     void populate_frequency();
     void populate_ids();
-    void reassign_ids(std::vector<Index> const & lst_frequency);
+    void reassign_ids(std::vector<int64_t> const & lst_frequency);
 	int64_t get_id(const wchar_t * str) ;
 	void reduce(int64_t threshold=5);
 };

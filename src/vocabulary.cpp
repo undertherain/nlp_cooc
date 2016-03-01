@@ -41,7 +41,7 @@ void Vocabulary::read_from_dir(std::string dir)
         //std::cerr<<wstring_to_utf8(std::wstring(word))<<"\n";
 		if (is_word_valid(std::wstring(word)))
 		{
-			tree.set_id_and_increment(word);	
+			tree.set_id_and_increment(wstring_to_utf8(word).c_str());	
 			cnt_words_processed++;
 		}
 	}
@@ -64,7 +64,7 @@ void Vocabulary::read_from_precomputed(std::string dir)
         std::vector<std::wstring> tokens;
         boost::split(tokens, line, boost::is_any_of(L"\t"));
         Index id= stoi(tokens[1]);
-		lst_id2word[id]=tokens[0];
+		lst_id2word[id]=wstring_to_utf8(tokens[0]);
     }
     for (size_t i=0; i<cnt_words; i++)
         tree.set_id(lst_id2word[i].c_str(),i);    
@@ -79,7 +79,7 @@ void Vocabulary::read_from_precomputed(std::string dir)
 
 int64_t Vocabulary::get_id(const wchar_t * str)
 {
-	return tree.get_id(str);
+	return tree.get_id(wstring_to_utf8(str).c_str());
 }
 
 void Vocabulary::reduce(int64_t threshold)
@@ -95,12 +95,12 @@ void Vocabulary::reduce(int64_t threshold)
 
 void Vocabulary::dump_frequency(const std::string & name_file) const
 {
-	tree.dump_frequency(name_file);
+	tree.dump_frequency(name_file.c_str());
 }
 
 void Vocabulary::dump_ids(const std::string & name_file) const
 {
-	tree.dump_ids(name_file);	
+	tree.dump_ids(name_file.c_str());	
 }
 
 void Vocabulary::populate_frequency()

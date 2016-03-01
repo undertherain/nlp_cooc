@@ -286,7 +286,7 @@ void TernaryTree::dump_dot(const std::string & name_file) const
     visit_recursively(tree,0,a);
 }
 
-void TernaryTree::dump_ids(const std::string & name_file) const
+void TernaryTree::dump_ids(const char * name_file) const
 {
     ActionFileWriteId a(name_file);
     visit_recursively(tree,0,a);
