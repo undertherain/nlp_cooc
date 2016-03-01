@@ -2,7 +2,8 @@
 %include "stdint.i"
 
 %{
-#include "../../src/ternary_tree.hpp"
+    #define SWIG_FILE_WITH_INIT
+    #include "../../src/ternary_tree.hpp"
 %}
 
 /* Let's just grab the original header file here */

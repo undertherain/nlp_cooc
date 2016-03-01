@@ -35,8 +35,10 @@ public:
     TernaryTreeNode<int64_t> * tree;
     TernaryTree():tree(NULL)
     {
-//        tree = new TernaryTreeNode<Index>();
-//        tree->c='m';
+    }
+    TernaryTree(const TernaryTree & t2):tree(t2.tree)
+    {
+
     }
 //Index get_value(const TernaryTreeNode<Index> * node, const char * str) ;
     int64_t get_id(const char * str);
