@@ -1,4 +1,5 @@
 %module ternary_tree
+%include "stdint.i"
 
 %{
 #include "../ternary_tree.hpp"

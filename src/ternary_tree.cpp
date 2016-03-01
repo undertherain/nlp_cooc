@@ -7,7 +7,12 @@
 //#define MAX_STR_SIZE  1500
 char  buffer[MAX_STR_SIZE];
 
-Index TernaryTree::set_id_and_increment(const char * str)
+int TernaryTree::myfunc()
+{
+    return 34;
+}
+
+int64_t TernaryTree::set_id_and_increment(const char * str)
 {
     auto node = get_node_or_create(str);
     if (!node->data) node->id=id_global++;
@@ -15,19 +20,19 @@ Index TernaryTree::set_id_and_increment(const char * str)
     return node->id;    
 }
 
-void TernaryTree::set_id(const char * str,Index id)
+void TernaryTree::set_id(const char * str,int64_t id)
 {
     auto node = get_node_or_create(str);
     node->data=1;
     node->id=id;    
 }
 
-TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
+TernaryTreeNode<int64_t> * TernaryTree::get_node_or_create(const char * str)
 {
     if (tree==NULL)
     { 
         //std::cerr<<"creating new head\n";
-        tree = new TernaryTreeNode<Index>();
+        tree = new TernaryTreeNode<int64_t>();
         tree->c=str[0];
         //tree->data=id_global++;
     } 
@@ -47,7 +52,7 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
         {
             if (node->down==NULL) 
             {
-                node->down= new TernaryTreeNode<Index>();
+                node->down= new TernaryTreeNode<int64_t>();
                 node->down->c=str[depth+1];     
 //                std::cerr<<"creating down\n";
             }
@@ -60,7 +65,7 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
         {
             if (node->left==NULL)   
             {   
-                node->left= new TernaryTreeNode<Index>();
+                node->left= new TernaryTreeNode<int64_t>();
                 node->left->c=c;
 //                std::cerr<<"creating left\n";
             }
@@ -71,7 +76,7 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
         {
             if (node->right==NULL) 
             {
-                node->right= new TernaryTreeNode<Index>();
+                node->right= new TernaryTreeNode<int64_t>();
                 node->right->c=c;
             }
             node=node->right;
@@ -84,7 +89,7 @@ TernaryTreeNode<Index> * TernaryTree::get_node_or_create(const char * str)
 }
 
 
-Index TernaryTree::get_id(const char * str)
+int64_t TernaryTree::get_id(const char * str)
 {
     auto node=tree;
     if (node==NULL) return -1;
@@ -129,7 +134,7 @@ ActionFile::~ActionFile()
         file.close();
     }
 
-void ActionFileWriteFrequency::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionFileWriteFrequency::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
     {
     if (node->data)
 //        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->data<<"\n";
@@ -137,14 +142,14 @@ void ActionFileWriteFrequency::operator()(TernaryTreeNode<Index>* node,unsigned 
     }
 
 
-void ActionFileWriteId::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionFileWriteId::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
     {
     if (node->data)
 //        file<<wstring_to_utf8(std::wstring(buffer,buffer+depth+1))<<"\t"<<node->id<<"\n";
         file<<std::string(buffer,buffer+depth+1)<<"\t"<<node->id<<"\n";
     }
 
-void ActionCountNodes::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionCountNodes::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
     {
         cnt++;
     }
@@ -159,7 +164,7 @@ ActionFileWriteDot::~ActionFileWriteDot()
         file<<"}\n";
     }
     
-void ActionFileWriteDot::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionFileWriteDot::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
 {
     std::string label(buffer,buffer+depth+1);
     //file<<wstring_to_utf8(label)<<" [label="<<node->c<<"];\n";
@@ -186,7 +191,7 @@ void ActionFileWriteDot::operator()(TernaryTreeNode<Index>* node,unsigned int de
     }
 
 
-void visit_recursively(TernaryTreeNode<Index> * node,unsigned int depth, Action & action)
+void visit_recursively(TernaryTreeNode<int64_t> * node,unsigned int depth, Action & action)
 {
     if (node==NULL) return;
     buffer[depth]=node->c;  
@@ -202,20 +207,20 @@ void visit_recursively(TernaryTreeNode<Index> * node,unsigned int depth, Action 
     buffer[depth]=node->c;  
 }
 
-void ActionPopulateFrequency::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionPopulateFrequency::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
 {
     if (node->id>=0)
     lst_frequency[node->id]=node->data;
 }
 
-void ActionPopulateIds::operator()(TernaryTreeNode<Index>* node,unsigned int depth)
+void ActionPopulateIds::operator()(TernaryTreeNode<int64_t>* node,unsigned int depth)
 {
     if (node->id>=0)
     lst_id2word[node->id]=std::string(buffer,buffer+depth+1);
 }
 
 
-bool trim(TernaryTreeNode<Index> * * pnode, int64_t threshold, unsigned int depth)
+bool trim(TernaryTreeNode<int64_t> * * pnode, int64_t threshold, unsigned int depth)
 {
     auto node = * pnode;
     if (node==NULL) return true;
@@ -256,7 +261,7 @@ bool trim(TernaryTreeNode<Index> * * pnode, int64_t threshold, unsigned int dept
 
 
 
-void TernaryTree::populate_frequency(std::vector<Index> & lst_frequency ) const
+void TernaryTree::populate_frequency(std::vector<int64_t> & lst_frequency ) const
 {
     ActionPopulateFrequency a(lst_frequency);
     visit_recursively(tree,0,a);
@@ -294,7 +299,7 @@ void TernaryTree::reassign_ids()
     id_global=a.current_id;
 }
 
-void TernaryTree::reassign_ids_new(std::vector<Index> const  & lst_new_ids)
+void TernaryTree::reassign_ids_new(std::vector<int64_t> const  & lst_new_ids)
 {
     ActionReassignIdsFreq a(lst_new_ids);
     visit_recursively(tree,0,a);
