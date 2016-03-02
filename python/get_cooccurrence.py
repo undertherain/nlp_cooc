@@ -90,15 +90,17 @@ matrix_coo=matrix_csr.tocoo()
 #print(matrix_coo)
 cnt_words_processed=vocab.l_frequencies.sum()
 #print(matrix_csr)
-f_out=open("bigrams_list","w")
-for i in zip(matrix_coo.row,matrix_coo.col):
-	row=i[0]
-	col=i[1]
-	freq=matrix[i]
-	v=math.log2((freq*cnt_words_processed)/(vocab.l_frequencies[col]*vocab.l_frequencies[col]))
-	f_out.write("{}\t{}\t{}\t{:0.5f}\n".format(vocab.get_word_by_id(row),vocab.get_word_by_id(col),freq,v))
-f_out.close()
-print(matrix_csr.indices.dtype)
+debug=False
+if debug:
+	f_out=open("bigrams_list","w")
+	for i in zip(matrix_coo.row,matrix_coo.col):
+		row=i[0]
+		col=i[1]
+		freq=matrix[i]
+		v=math.log2((freq*cnt_words_processed)/(vocab.l_frequencies[col]*vocab.l_frequencies[col]))
+		f_out.write("{}\t{}\t{}\t{:0.5f}\n".format(vocab.get_word_by_id(row),vocab.get_word_by_id(col),freq,v))
+	f_out.close()
+#print(matrix_csr.indices.dtype)
 
 data_pmi=np.zeros(matrix_csr.data.shape[0],dtype=np.float32)
 ind=0
