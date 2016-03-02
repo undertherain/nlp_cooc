@@ -16,6 +16,7 @@
 #include <cstdarg>
 #include "options.hpp"
 #include "basic_utils/stream_reader.hpp"
+#include "array_of_trees.hpp"
 
 typedef int64_t Index;
 std::string provenance;
@@ -28,32 +29,12 @@ Index cnt_words_processed;
 //Index cnt_words_processed_old;
 
 Index cnt_bigrams;
-typedef std::map<Index,Index> Accumulator;
-std::vector<Accumulator> counters;
+//typedef std::map<Index,Index> Accumulator;
+//std::vector<Accumulator> counters;
 Vocabulary vocab;
 #include "basic_utils/file_io.hpp"
 
-void accumulate(Accumulator & ac,Index w)
-{
-    if (ac.find( w ) != ac.end())
-        ac[w]++;
-    else
-    {
-        ac.insert(std::make_pair(w,1));
-        cnt_bigrams++;
-    }
-}
-
-void accumulate(Index first, Index second)
-{
-    if ((first<0)||(second<0)) return;
-    //if (second.length()<2) return;
-    //if (counters.find( first ) == counters.end())
-      //  counters.insert(std::make_pair(first,Accumulator()));
-    accumulate(counters[first],second);
-}
-
-void load_bigrams(std::string str_path_in,const Options & options)
+void load_bigrams(std::string str_path_in,const Options & options,ArrayOfTrees & counters)
 {
     DirReader dr(str_path_in);
     auto size_window = options.size_window;
@@ -87,8 +68,8 @@ void load_bigrams(std::string str_path_in,const Options & options)
             {
                 //std::cerr<<"accing "<<last<<" - "<<cb[j]<<"\n";
                 //std::cerr<<"accing "<<wstring_to_utf8(lst_id2word[last])<<" - "<<wstring_to_utf8(lst_id2word[cb[j]])<<"\n";
-                accumulate(last,cb[j]);
-                accumulate(cb[j],last);
+                counters.accumulate(last,cb[j]);
+                counters.accumulate(cb[j],last);
              }
         }
     }
@@ -128,21 +109,22 @@ int main(int argc, char * argv[])
     provenance += "source corpus : " + str_path_in + "\n";
 
     std::cerr<<"extracting bigrams\n";
-    counters.resize(vocab.cnt_words);
+    ArrayOfTrees counters;
+    counters.rows.resize(vocab.cnt_words);
     provenance+="windows size : "+FormatHelper::ConvertToStr(options.size_window);
     provenance+="\nobey sentence boundaries : ";
     provenance+=options.obey_sentence_bounds?"yes":"no";
     provenance+="\nfrequency weightening : PMI\n";
-    load_bigrams(str_path_in,options);
+    load_bigrams(str_path_in,options,counters);
 
     std::cerr<<"dumping results to disk\n";
 
-    dump_crs(path_out.string(),counters,vocab,true);
+    dump_crs(path_out.string(),counters.rows,vocab,true);
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
-        dump_crs(path_out.string(),counters,vocab,false);
-        write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string(),counters,vocab);
+        dump_crs(path_out.string(),counters.rows,vocab,false);
+        write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string(),counters.rows ,vocab);
     }
     return 0;
 }

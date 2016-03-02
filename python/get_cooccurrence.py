@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from timeit import default_timer as timer
 import sys
 import glob
 import os
@@ -68,7 +68,7 @@ def process_word(word):
 
 def process_file(name):
 	print ("processing "+name)
-	f=open(name)
+	f=open(name, errors="replace")
 	for line in f:
 		s = line.strip().lower()
 		re_pattern=r"[\w\-']+|[.,!?…]"
@@ -76,17 +76,32 @@ def process_file(name):
 		for token in tokens:
 			process_word(token)
 
+start = timer()
+
 for root, dir, files in os.walk(name_dir_in,followlinks=True):
         for items in fnmatch.filter(files, "*"):
         	process_file(os.path.join(root,items))
 
+end = timer()
+print("done reading corpus, took",end - start)      
+start=end
 print("-----converting to COO------")
 matrix_coo=matrix.tocoo()
+end = timer()
+print(" took",end - start)      
+start=end
 #matrix_coo.sort_indices()
 #print(matrix)
-print("-----writing data------")
+print("-----converting to csr------")
 matrix_csr=matrix_coo.tocsr()
+end = timer()
+print(" took",end - start)      
+start=end
+print("-----converting back to coo------")
 matrix_coo=matrix_csr.tocoo()
+end = timer()
+print(" took",end - start)      
+start=end
 #print(matrix_coo)
 cnt_words_processed=vocab.l_frequencies.sum()
 #print(matrix_csr)
@@ -116,7 +131,7 @@ for i in zip(matrix_coo.row,matrix_coo.col):
 #print(matrix_csr.indices.dtype)
 
 
-matrix_csr.indices.tofile("bigrams.col_ind.bin")
-matrix_csr.indptr.tofile("bigrams.row_ptr.bin")
-data_pmi.tofile("bigrams.data.bin")
+matrix_csr.indices.tofile(os.path.join(name_dir_out,"bigrams.col_ind.bin"))
+matrix_csr.indptr.tofile(os.path.join(name_dir_out,"bigrams.row_ptr.bin"))
+data_pmi.tofile(os.path.join(name_dir_out,"bigrams.data.bin"))
 
