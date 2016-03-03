@@ -10,8 +10,8 @@ import numpy as np
 from vocabulary import Vocabulary
 import collections
 from scipy import sparse
-from scipy.sparse import dok_matrix
-
+from scipy.sparse import * #dok_matrix
+from swig.array_of_trees import ArrayOfTrees
 def _my_get_index_dtype(*a, **kw):
 	return np.int64
 sparse.sputils.get_index_dtype = _my_get_index_dtype
@@ -36,7 +36,11 @@ d = collections.deque(maxlen=size_window)
 for i in range(size_window):
 	d.append(-1)
 
-matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+#matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+#matrix=lil_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+#matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+
+m=ArrayOfTrees(vocab.cnt_words)
 
 
 def get_worker_id(id_word):
@@ -44,7 +48,9 @@ def get_worker_id(id_word):
 
 def accumulate(id1,id2):
 	#decide which worker accumulates
-	matrix[id1,id2]+=1
+	#matrix[id1,id2]+=1
+	m.accumulate(id1,id2)
+	pass
 
 def process_word(word):
 	id_word=vocab.get_id(word)
@@ -85,6 +91,9 @@ for root, dir, files in os.walk(name_dir_in,followlinks=True):
 end = timer()
 print("done reading corpus, took",end - start)      
 start=end
+print("-----dumping data------")
+m.dump_csr(name_dir_out,vocab.l_frequencies);
+exit()
 print("-----converting to COO------")
 matrix_coo=matrix.tocoo()
 end = timer()

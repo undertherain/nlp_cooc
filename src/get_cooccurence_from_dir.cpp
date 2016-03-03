@@ -29,8 +29,6 @@ Index cnt_words_processed;
 //Index cnt_words_processed_old;
 
 Index cnt_bigrams;
-//typedef std::map<Index,Index> Accumulator;
-//std::vector<Accumulator> counters;
 Vocabulary vocab;
 #include "basic_utils/file_io.hpp"
 
@@ -109,8 +107,8 @@ int main(int argc, char * argv[])
     provenance += "source corpus : " + str_path_in + "\n";
 
     std::cerr<<"extracting bigrams\n";
-    ArrayOfTrees counters;
-    counters.rows.resize(vocab.cnt_words);
+    ArrayOfTrees counters(vocab.cnt_words);
+    //counters.rows.resize(vocab.cnt_words);
     provenance+="windows size : "+FormatHelper::ConvertToStr(options.size_window);
     provenance+="\nobey sentence boundaries : ";
     provenance+=options.obey_sentence_bounds?"yes":"no";

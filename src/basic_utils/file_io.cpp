@@ -34,10 +34,10 @@ double get_PMI(Index cnt,Index id1,Index id2,Vocabulary const & vocab)
 void dump_crs(std::string path_out,std::vector<Accumulator> const & counters,Vocabulary const & vocab, bool binary)
 {
     std::ofstream file;
-    auto mode=binary? std::ios::out | std::ios::binary :  std::ios::out;
+    auto mode=binary? std::ios::out | std::ios::binary : std::ios::out;
     std::string str_path = (boost::filesystem::path(path_out) / boost::filesystem::path(binary?"bigrams.data.bin":"bigrams.data")).string();
     file.open (str_path,mode);
-    if(!file) throw  std::runtime_error("can not open output file "+str_path+" , check the path");
+    if(!file) throw  std::runtime_error("can not open output file " + str_path + " , check the path");
     for (size_t first=0;first<counters.size();first++)
         for (const auto& second : counters[first]) 
         {

@@ -12,7 +12,7 @@ class Vocabulary(TernaryTree):
 		pass
 		#tree=TernaryTree()
 	def read_from_precomputed(self,path):
-		self.l_frequencies = np.fromfile(open(os.path.join(path,"freq_per_id")),dtype=np.uint64)
+		self.l_frequencies = np.fromfile(open(os.path.join(path,"freq_per_id")),dtype=np.int64)
 		self.cnt_words = self.l_frequencies.shape[0]
 		self.lst_words=[""]*self.cnt_words
 		f=open(os.path.join(path,"ids"), encoding='utf-8', errors='replace')

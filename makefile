@@ -14,7 +14,10 @@ dummy_bin_folder := $(shell mkdir -p bin)
 bin/BNC_to_text: src/BNC_to_text.cpp
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
-bin/get_cooccurence_from_dir: obj/get_cooccurence_from_dir.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o obj/file_io.o
+bin/get_cooccurence_from_dir: 	obj/get_cooccurence_from_dir.o obj/buffer_byte.o \
+								obj/ternary_tree.o obj/vocabulary.o \
+								obj/stream_reader.o obj/string_tools.o \
+								obj/file_io.o obj/array_of_trees.o
 	g++  $^ $(CXXFLAGS) -o $@ $(LIBS)
 
 bin/create_vocab: obj/create_vocab.o obj/buffer_byte.o obj/ternary_tree.o obj/vocabulary.o obj/stream_reader.o obj/string_tools.o obj/file_io.o
@@ -30,6 +33,9 @@ obj/get_cooccurence_from_dir.o: src/get_cooccurence_from_dir.cpp
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
 obj/create_vocab.o: src/create_vocab.cpp 
+	g++  $^ $(CXXFLAGS) -c -o $@ 
+
+obj/array_of_trees.o: src/array_of_trees.cpp 
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
 obj/vocabulary.o: src/vocabulary.cpp
