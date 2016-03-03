@@ -3135,18 +3135,15 @@
 %numpy_typemaps(float             , NPY_FLOAT    , int)
 %numpy_typemaps(double            , NPY_DOUBLE   , int)
 
-%numpy_typemaps(int8_t       , NPY_BYTE     , int)
-%numpy_typemaps(uint8_t     , NPY_UBYTE    , int)
-%numpy_typemaps(int16_t             , NPY_SHORT    , int)
-%numpy_typemaps(uint16_t    , NPY_USHORT   , int)
-%numpy_typemaps(int32_t               , NPY_INT      , int)
-%numpy_typemaps(uint32_t      , NPY_UINT     , int)
-%numpy_typemaps(long              , NPY_LONG     , int)
-%numpy_typemaps(unsigned long     , NPY_ULONG    , int)
-%numpy_typemaps(int64_t         , NPY_LONGLONG , int)
-%numpy_typemaps(uint64_t, NPY_ULONGLONG, int)
-%numpy_typemaps(float             , NPY_FLOAT    , int)
-%numpy_typemaps(double            , NPY_DOUBLE   , int)
+%numpy_typemaps(int8_t            , NPY_BYTE     , int)
+%numpy_typemaps(uint8_t           , NPY_UBYTE    , int)
+%numpy_typemaps(int16_t           , NPY_SHORT    , int)
+%numpy_typemaps(uint16_t          , NPY_USHORT   , int)
+%numpy_typemaps(int32_t           , NPY_INT      , int)
+%numpy_typemaps(uint32_t          , NPY_UINT     , int)
+%numpy_typemaps(int64_t           , NPY_LONGLONG , int)
+%numpy_typemaps(uint64_t          , NPY_ULONGLONG, int)
+
 /* ***************************************************************
  * The follow macro expansion does not work, because C++ bool is 4
  * bytes and NPY_BOOL is 1 byte
