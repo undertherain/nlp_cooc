@@ -81,7 +81,7 @@ test: all
 	./bin/create_vocab $(TEST_CORP) temp_c/ --minimal_frequency=1
 	./bin/create_vocab $(TEST_CORP) temp_p/ --minimal_frequency=1
 	./bin/get_cooccurence_from_dir $(TEST_CORP) temp_c/ --window_size=2 --debug=true 
-	cd python; 	python3 get_cooccurrence.py  ../$(TEST_CORP) ../temp_p/
+#	cd python; 	python3 get_cooccurrence.py  ../$(TEST_CORP) ../temp_p/
 	cd python; mpiexec -n 3 python3 get_cooccurrence_distributed.py  ../$(TEST_CORP) ../temp_p/
 clean:
 	rm -f obj/*.o

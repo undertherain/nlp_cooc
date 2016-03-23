@@ -194,8 +194,35 @@ else:
 	offset_scaned=np.zeros((1),dtype=np.int64)
 	comm_reducers.Exscan(my_offset, offset_scaned)
 	row_ptr+=offset_scaned[0]
-	print ("r{} row_ptr".format(id_reducer),row_ptr)
-	f = h5py.File(os.path.join(name_dir_out,'cooccurrence.h5p'), "w",driver='mpio', comm=comm)
+
+	size_data=row_ptr[-1]
+	size_data=comm_reducers.bcast(size_data, root=cnt_reducers-1)
+
+#	print ("r{} row_ptr".format(id_reducer),row_ptr)
+	#print ("r{} size data".format(id_reducer),size_data)
+	f = h5py.File(os.path.join(name_dir_out,'cooccurrence_csr.h5p'), "w",driver='mpio', comm=comm_reducers)
+	
+	#get data size()
+
+	dset_data = f.create_dataset("data", (size_data,), dtype='float32')
+	dset_data[row_ptr[0]:row_ptr[-1]] = data_pmi
+	f.flush()
+
+	dset_col_ind = f.create_dataset("col_ind", (size_data,), dtype='int64')
+	dset_col_ind[row_ptr[0]:row_ptr[-1]] = col_ind
+	f.flush()
+
+	#if id_reducer<cnt_reducers-1:
+
+	dset_row_ptr = f.create_dataset("row_ptr", (cnt_words+1,), dtype='int64')
+	if id_reducer<cnt_reducers-1:
+		dset_row_ptr[rstart:rend] = row_ptr[:-1]
+	else:
+		dset_row_ptr[rstart:rend+1] = row_ptr[:]
+	#print ("r{} ".format(id_reducer),rend-rstart,row_ptr.shape)
+	
+	f.flush()
+
 	f.close()
 #matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
 #matrix=lil_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
