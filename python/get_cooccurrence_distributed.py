@@ -14,9 +14,11 @@ from scipy.sparse import * #dok_matrix
 from swig.array_of_trees import ArrayOfTrees
 from mpi4py import MPI
 import h5py
+import datetime
 
 size_window=2
 size_buffer=3
+start = timer()
 #---some tweaks for scipy
 
 def _my_get_index_dtype(*a, **kw):
@@ -50,6 +52,7 @@ comm_reducers = comm.Create(group_reducers)
 name_dir_in = argv[1]
 name_dir_out = argv[2]
 cnt_words=0
+start = timer()
 
 d = collections.deque(maxlen=size_window)
 for i in range(size_window):
@@ -227,16 +230,24 @@ else:
 #matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
 #matrix=lil_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
 #matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+provenance=""
+end = timer()
+if comm.rank==0:
+	provenance += "cooccurrences collected on " + str(datetime.datetime.now())
+	provenance += "\nwith " + argv[0]
+	provenance += "\nsource corpus : " + name_dir_in + "\n"
+	provenance+="windows size : {}\n".format(size_window)
+	provenance+="obey sentence boundaries : yes"
+	#provenance+=.obey_sentence_bounds?"yes":"no";
+	provenance+="\nfrequency weightening : PMI\n"
+	provenance+="took {:.2f}s\n".format(end - start)      
+	with open (os.path.join(name_dir_out,"provenance.txt"), "r") as myfile:
+		provenance = myfile.read() +"\n" +provenance
+	text_file = open(os.path.join(name_dir_out,"provenance.txt"), "w")
+	text_file.write(provenance)
+	text_file.close()
 
 
-
-
-
-#start = timer()
-
-#process dirs
-#end = timer()
-#print("done reading corpus, took",end - start)      
 #start=end
 #print("-----dumping data------")
 #m.dump_csr(name_dir_out,vocab.l_frequencies);
