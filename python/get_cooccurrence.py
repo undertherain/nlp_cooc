@@ -40,11 +40,32 @@ for i in range(size_window):
 #matrix=lil_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
 #matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
 
+cnt_workers=2
+
 m=ArrayOfTrees(vocab.cnt_words)
 
 
-def get_worker_id(id_word):
-	cnt_words_total=vocab.cnt_words
+def get_start_i(N,cnt_workers,id_worker):
+    if N<cnt_workers: return min(N,id_worker)
+    length_of_range=((N+1)//cnt_workers)
+    start = length_of_range*id_worker
+    if id_worker<N%cnt_workers:
+        start+=id_worker
+    else:
+        start+=N%cnt_workers
+    return start
+def get_interval(N,cnt_workers,id_worker):
+    return (get_start_i(N,cnt_workers,id_worker),get_start_i(N,cnt_workers,id_worker+1))
+
+def get_worker_id(N,cnt_workers,v):
+    if N<cnt_workers: return v
+    length_of_range=((N+1)//cnt_workers)
+    remainder = N%cnt_workers 
+    if v<remainder*(length_of_range+1):
+        return v//(length_of_range+1)
+    else:
+        return (v-remainder*(length_of_range+1)) // length_of_range + N%cnt_workers
+
 
 def accumulate(id1,id2):
 	#decide which worker accumulates

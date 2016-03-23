@@ -14,6 +14,8 @@
     import_array();
 %}
 
-%apply (int64_t* INPLACE_ARRAY1,int DIM1) {(const int64_t* frequencies, int n)}
+%apply (int64_t* INPLACE_ARRAY1,int DIM1) {(const int64_t* frequencies, int size_freq)}
+%apply (int64_t* INPLACE_ARRAY1,int DIM1) {(int64_t * buffer, int n)}
+%apply (float * INPLACE_ARRAY1,int DIM1) {(float * buffer_f, int n)}
 
 %include "../../src/array_of_trees.hpp"

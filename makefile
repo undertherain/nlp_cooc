@@ -6,6 +6,8 @@ CXXFLAGS = -Wall -Wextra -Wpedantic -std=c++14 -O3 -ggdb3 -g3 -fdiagnostics-colo
 BUILD_NUMBER_FILE = build-number.txt
 
 all: bin/get_cooccurence_from_dir bin/create_vocab
+#	cd python/swig && make 
+	make -C python/swig 
 #all: bin/BNC_to_text bin/get_cooccurence_from_dir bin/sparse
 
 dummy_build_folder := $(shell mkdir -p obj)
@@ -72,12 +74,15 @@ obj/test_tree.o: src/tests/test_tree.cpp
 	g++  $^ $(CXXFLAGS) -c -o $@ 
 
 
-TEST_CORP = ../data/test_corpora/rus/punctuation/
+#TEST_CORP = ../data/test_corpora/rus/punctuation/
+TEST_CORP = ../data/test_corpora/eng/decent_size/
 
 test: all
-	./bin/create_vocab $(TEST_CORP) temp/ --minimal_frequency=1
-	./bin/get_cooccurence_from_dir $(TEST_CORP) temp/ --window_size=2 --debug=true 
-
+	./bin/create_vocab $(TEST_CORP) temp_c/ --minimal_frequency=1
+	./bin/create_vocab $(TEST_CORP) temp_p/ --minimal_frequency=1
+	./bin/get_cooccurence_from_dir $(TEST_CORP) temp_c/ --window_size=2 --debug=true 
+	cd python; 	python3 get_cooccurrence.py  ../$(TEST_CORP) ../temp_p/
+	cd python; mpiexec -n 3 python3 get_cooccurrence_distributed.py  ../$(TEST_CORP) ../temp_p/
 clean:
 	rm -f obj/*.o
 

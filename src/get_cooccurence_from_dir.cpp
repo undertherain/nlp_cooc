@@ -117,11 +117,12 @@ int main(int argc, char * argv[])
 
     std::cerr<<"dumping results to disk\n";
 
-    dump_crs(path_out.string(),counters.rows,vocab,true);
+    //dump_crs(path_out.string(),counters.rows,vocab,true);
+    counters.dump_csr(path_out.string().c_str(),vocab.freq_per_id.data(),0);
     write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
     if (options.debug)
     {
-        dump_crs(path_out.string(),counters.rows,vocab,false);
+        //dump_crs(path_out.string(),counters.rows,vocab,false);
         write_cooccurrence_text((path_out / boost::filesystem::path("bigrams_list")).string(),counters.rows ,vocab);
     }
     return 0;
