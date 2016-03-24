@@ -40,6 +40,8 @@ cnt_workers = comm.Get_size()
 cnt_mappers = 1
 if cnt_workers>3:
 	cnt_mappers=2
+if cnt_workers>5:
+	cnt_mappers=3
 cnt_reducers = cnt_workers-cnt_mappers
 id_reducer = id_worker-cnt_mappers
 group = comm.Get_group()
