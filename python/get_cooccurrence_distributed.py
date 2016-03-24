@@ -17,7 +17,7 @@ import h5py
 import datetime
 
 size_window=2
-size_buffer=3
+size_buffer=100
 start = timer()
 #---some tweaks for scipy
 
@@ -38,6 +38,8 @@ comm = MPI.COMM_WORLD
 id_worker = comm.Get_rank()
 cnt_workers = comm.Get_size()
 cnt_mappers = 1
+if cnt_workers>3:
+	cnt_mappers=2
 cnt_reducers = cnt_workers-cnt_mappers
 id_reducer = id_worker-cnt_mappers
 group = comm.Get_group()
@@ -51,7 +53,6 @@ comm_reducers = comm.Create(group_reducers)
 
 name_dir_in = argv[1]
 name_dir_out = argv[2]
-cnt_words=0
 start = timer()
 
 d = collections.deque(maxlen=size_window)
@@ -122,7 +123,7 @@ def process_word(word):
 		enqueue(d[i],d[-1])
 
 def process_file(name):
-	print ("processing "+name)
+	print ("m{} processing {}".format(id_worker,name))
 	f=open(name, errors="replace")
 	for line in f:
 		s = line.strip().lower()
@@ -131,36 +132,39 @@ def process_file(name):
 		for token in tokens:
 			process_word(token)
 
+cnt_words=0
+freqs = np.empty((cnt_words), dtype=np.int64)
 
-if id_worker==0:  #init 
+#if id_worker==0:  #init 
+
+	
+if id_worker<cnt_mappers:  #mapping
 	vocab=Vocabulary()
 	vocab.read_from_precomputed(name_dir_out)
+	print("loaded vocab")
 	#broadcast number of words
 	cnt_words=vocab.cnt_words
+	freqs=vocab.l_frequencies
 	cnt_words=comm.bcast(cnt_words, root=0)
-	freqs=np.array(vocab.l_frequencies,dtype=np.int64)
 	freqs = comm.bcast(freqs, root=0)
-	
-	print("I'm mapper, processing ifles")
+	print("I'm mapper, processing files in ",name_dir_in)
 	lst_files=[]
 	for root, dir, files in os.walk(name_dir_in,followlinks=True):
 		for items in fnmatch.filter(files, "*"):
-#			lst_files.append(os.path.join(root,items))
-			process_file(os.path.join(root,items))
+			lst_files.append(os.path.join(root,items))
+#			process_file(os.path.join(root,items))
+	lst_files=rndrobin_list(lst_files,cnt_mappers,id_worker)
+	for f in lst_files:
+		process_file(f)
 	#send unfinished buffers
 	for id_dest in range(cnt_reducers):
 		for pos_buf in range(pos_bufers[id_dest],size_buffer):
 			buffers[id_dest][pos_buf][0]=-1
 		comm.Send(buffers[id_dest], dest=id_dest+cnt_mappers, tag=1)
-	#lst_files=rndrobin_list(lst_files,cnt_workers,id_worker)
 	#print (lst_files)
-	#exit()
-else:
-	#this is reducer
-	cnt_words = comm.bcast(cnt_words, root=0)
-	freqs = np.empty((cnt_words), dtype=np.int64)
+else:	#this is reducer
+	cnt_words=comm.bcast(cnt_words, root=0)
 	freqs = comm.bcast(freqs, root=0)
-
 	rstart,rend=get_interval(cnt_words,cnt_reducers,id_reducer)
 	m=ArrayOfTrees(rend-rstart)
 	print ("I'm reducer {} of {} running on {}, my ownership range is from {} to {}".format(id_reducer,cnt_reducers,MPI.Get_processor_name(),rstart,rend))
@@ -215,8 +219,6 @@ else:
 	dset_col_ind[row_ptr[0]:row_ptr[-1]] = col_ind
 	f.flush()
 
-	#if id_reducer<cnt_reducers-1:
-
 	dset_row_ptr = f.create_dataset("row_ptr", (cnt_words+1,), dtype='int64')
 	if id_reducer<cnt_reducers-1:
 		dset_row_ptr[rstart:rend] = row_ptr[:-1]
@@ -227,9 +229,7 @@ else:
 	f.flush()
 
 	f.close()
-#matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
-#matrix=lil_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
-#matrix=dok_matrix((vocab.cnt_words, vocab.cnt_words), dtype=np.int64)
+
 provenance=""
 end = timer()
 if comm.rank==0:
@@ -246,14 +246,4 @@ if comm.rank==0:
 	text_file = open(os.path.join(name_dir_out,"provenance.txt"), "w")
 	text_file.write(provenance)
 	text_file.close()
-
-
-#start=end
-#print("-----dumping data------")
-#m.dump_csr(name_dir_out,vocab.l_frequencies);
-
-
-#matrix_csr.indices.tofile(os.path.join(name_dir_out,"bigrams.col_ind.bin"))
-#matrix_csr.indptr.tofile(os.path.join(name_dir_out,"bigrams.row_ptr.bin"))
-#data_pmi.tofile(os.path.join(name_dir_out,"bigrams.data.bin"))
 
