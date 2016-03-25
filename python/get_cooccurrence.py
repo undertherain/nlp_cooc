@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import line_profiler
 from timeit import default_timer as timer
 import sys
 import glob
@@ -73,6 +74,7 @@ def accumulate(id1,id2):
 	m.accumulate(id1,id2)
 	pass
 
+#@profile
 def process_word(word):
 	id_word=vocab.get_id(word)
 	if word in {".","!","?","…"}:

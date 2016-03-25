@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+#import line_profiler
 from timeit import default_timer as timer
 import sys
 import glob
@@ -17,9 +18,11 @@ import h5py
 import datetime
 
 size_window=2
-size_buffer=10000
+size_buffer=1000
 start = timer()
 #---some tweaks for scipy
+timings = {}
+timings["wait_send"]=0.0
 
 def _my_get_index_dtype(*a, **kw):
 	return np.int64
@@ -75,6 +78,7 @@ def get_start_i(N,cnt_workers,id_worker):
     else:
         start+=N%cnt_workers
     return start
+
 def get_interval(N,cnt_workers,id_worker):
     return (get_start_i(N,cnt_workers,id_worker),get_start_i(N,cnt_workers,id_worker+1))
 
@@ -91,6 +95,16 @@ def rndrobin_list(l,cnt_workers,id_worker):
     r=[l[id_worker+i*cnt_workers] for i in range((len(l)+cnt_workers-1)//cnt_workers) if id_worker+i*cnt_workers<len(l)]
     return r
 
+buf_send=None
+req=None
+def MySend(id_dest):
+	global req
+	global buf_send
+	if req is not None:
+		MPI.Request.Wait(req)
+	buf_send=buffers[id_dest].copy()
+	req=comm.Isend(buf_send, dest=id_dest+cnt_mappers, tag=1)
+
 
 def enqueue(id1,id2):
 	#if id_mapper==1:
@@ -105,12 +119,15 @@ def enqueue(id1,id2):
 	pos_bufers[id_dest]+=1
 	if pos_bufers[id_dest]>=size_buffer:
 #		print("m{}: buffer is full, sending to {} ...".format(id_mapper,id_dest), end=" ")
-		sys.stdout.flush()
-		comm.Send(buffers[id_dest], dest=id_dest+cnt_mappers, tag=1)
+		#sys.stdout.flush()
+		timings["wait_send"]-=timer()
+		MySend(id_dest)
+		timings["wait_send"]+=timer()
 #		print("done")
-		sys.stdout.flush()
+		#sys.stdout.flush()
 		pos_bufers[id_dest]=0
 
+#@profile
 def process_word(word):
 	id_word=vocab.get_id(word)
 	if word in {".","!","?","…"}:
@@ -176,7 +193,7 @@ if id_worker<cnt_mappers:  #mapping
 		for pos_buf in range(pos_bufers[id_dest],size_buffer):
 			buffers[id_dest][pos_buf][0]=-1
 		comm.Send(buffers[id_dest], dest=id_dest+cnt_mappers, tag=1)
-	print ("m{} finished!".format(id_worker))
+	print ("m{} finished! sppend {:.2f} s on waiting Send".format(id_worker,timings["wait_send"]))
 	#print (lst_files)
 else:	#this is reducer
 	rstart,rend=get_interval(cnt_words,cnt_reducers,id_reducer)
@@ -195,12 +212,13 @@ else:	#this is reducer
 				m.accumulate(int(buffer[i][0]-rstart),int(buffer[i][1]))#todo mapping for aot
 			else:
 				cnt_mappers_finished+=1
-				print("r{}: one mapper finished".format(id_reducer))
-				sys.stdout.flush()
+				#print("r{}: one mapper finished".format(id_reducer))
+				#sys.stdout.flush()
 				if cnt_mappers_finished>=cnt_mappers:
 	   				print("r{}: all mappers finished".format(id_reducer))
 	   				has_work=False
 				break
+	comm_reducers.barrier()
 	if id_reducer==0:
 		print("writing data")
 	row_ptr=np.zeros((rend-rstart+1),dtype=np.int64)
