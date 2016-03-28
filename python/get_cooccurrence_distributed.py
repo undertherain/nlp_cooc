@@ -264,9 +264,9 @@ else:	#this is reducer
 	if id_reducer<cnt_reducers-1:
 		dset_row_ptr[rstart:rend] = row_ptr[:-1]
 	else:
-		print (row_ptr.shape)
-		print (rend+1-rstart)
-		print (cnt_words)
+		#print (row_ptr.shape)
+		#print (rend+1-rstart)
+		#print (cnt_words)
 		dset_row_ptr[rstart:rend+1] = row_ptr[:]
 	#print ("r{} ".format(id_reducer),rend-rstart,row_ptr.shape)
 	
@@ -276,7 +276,7 @@ else:	#this is reducer
 	comm_reducers.barrier()
 	timings["writing"]+=timer()
 	if id_reducer==0:
-		print("writing data  {}".format(str(datetime.timedelta(seconds=timings["writing"]))))
+		print("writing data took {}".format(str(datetime.timedelta(seconds=timings["writing"]))))
 
 comm.barrier()
 
