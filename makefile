@@ -80,9 +80,9 @@ obj/test_tree.o: src/tests/test_tree.cpp
 TEST_CORP = /work/alex/data/corpora/raw_texts/Eng/BNC_split
 
 test: all
-	./bin/create_vocab $(TEST_CORP) temp_c/ --minimal_frequency=2
-	./bin/create_vocab $(TEST_CORP) temp_p/ --minimal_frequency=2
-	./bin/get_cooccurence_from_dir $(TEST_CORP) temp_c/ --window_size=2 --debug=true 
+#	./bin/create_vocab $(TEST_CORP) temp_c/ --minimal_frequency=10
+#	./bin/create_vocab $(TEST_CORP) temp_p/ --minimal_frequency=10
+#	./bin/get_cooccurence_from_dir $(TEST_CORP) temp_c/ --window_size=2 --debug=true 
 #	cd python; 	python3 get_cooccurrence.py  ../$(TEST_CORP) ../temp_p/
 #	cd python; mpiexec -n 3 python3 get_cooccurrence_distributed.py  ../$(TEST_CORP) ../temp_p/
 	cd python; mpiexec -n 4 python3 get_cooccurrence_distributed.py  $(TEST_CORP) ../temp_p/

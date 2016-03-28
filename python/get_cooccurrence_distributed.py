@@ -23,6 +23,8 @@ start = timer()
 #---some tweaks for scipy
 timings = {}
 timings["wait_send"]=0.0
+timings["collecting"]=0.0
+timings["writing"]=0.0
 
 def _my_get_index_dtype(*a, **kw):
 	return np.int64
@@ -105,12 +107,10 @@ def MySend(id_dest):
 	buf_send=buffers[id_dest].copy()
 	req=comm.Isend(buf_send, dest=id_dest+cnt_mappers, tag=1)
 
-
 def enqueue(id1,id2):
 	#if id_mapper==1:
 		#print ("\t enq ", end=" ")
 	#	sys.stdout.flush()
-
 	id_dest=get_worker_id(cnt_words,cnt_reducers,id1)
 	#print ("word",id1,"goes to",id_dest)
 	pos_buf=pos_bufers[id_dest]
@@ -196,6 +196,7 @@ if id_worker<cnt_mappers:  #mapping
 	print ("m{} finished! sppend {:.2f} s on waiting Send".format(id_worker,timings["wait_send"]))
 	#print (lst_files)
 else:	#this is reducer
+	timings["collecting"]-=timer()
 	rstart,rend=get_interval(cnt_words,cnt_reducers,id_reducer)
 	m=ArrayOfTrees(rend-rstart)
 	print ("I'm reducer {} of {} running on {}, my ownership range is from {} to {}".format(id_reducer,cnt_reducers,MPI.Get_processor_name(),rstart,rend))
@@ -219,8 +220,11 @@ else:	#this is reducer
 	   				has_work=False
 				break
 	comm_reducers.barrier()
+	timings["collecting"]+=timer()
 	if id_reducer==0:
+		print("collecting took {}".format(str(datetime.timedelta(seconds=timings["collecting"]))))
 		print("writing data")
+	timings["writing"]-=timer()
 	row_ptr=np.zeros((rend-rstart+1),dtype=np.int64)
 	m.get_row_ptr(row_ptr)
 	#print("compiling the matrix")
@@ -269,8 +273,13 @@ else:	#this is reducer
 	f.flush()
 
 	f.close()
+	comm_reducers.barrier()
+	timings["writing"]+=timer()
+	if id_reducer==0:
+		print("writing data  {}".format(str(datetime.timedelta(seconds=timings["writing"]))))
 
 comm.barrier()
+
 provenance=""
 end = timer()
 if comm.rank==0:
@@ -282,7 +291,7 @@ if comm.rank==0:
 	#provenance+=.obey_sentence_bounds?"yes":"no";
 	provenance+="\nfrequency weightening : PMI\n"
 	provenance+="took {:.2f}s ({})\n".format(end - start,str(datetime.timedelta(seconds=end-start)))      
-	print ("elapsed time :",str(datetime.timedelta(seconds=end-start)))   
+	print ("total elapsed time :",str(datetime.timedelta(seconds=end-start)))   
 	with open (os.path.join(name_dir_out,"provenance.txt"), "r") as myfile:
 		provenance = myfile.read() +"\n" +provenance
 	text_file = open(os.path.join(name_dir_out,"provenance.txt"), "w")
