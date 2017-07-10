@@ -1,6 +1,7 @@
 #include "array_of_trees.hpp"
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include <boost/filesystem.hpp>
 
 ArrayOfTrees::ArrayOfTrees(const int64_t size)

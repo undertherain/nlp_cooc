@@ -1,5 +1,6 @@
 #include "file_io.hpp"
 #include <boost/filesystem.hpp>
+#include <cmath>
 
 size_t get_cnt_lines(const std::string &name_file)
 {

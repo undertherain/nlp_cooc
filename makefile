@@ -1,4 +1,4 @@
-.Phony: clean tests test
+.PHONY: clean tests test
 
 CXX = g++
 LIBS = -lboost_filesystem -lboost_system -lboost_program_options
