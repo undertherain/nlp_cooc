@@ -1,0 +1,3 @@
+add program version to metadata
+when reading vocab start adding from most frequent words to optimize tree structure
+
