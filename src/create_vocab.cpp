@@ -18,15 +18,15 @@
 #include "basic_utils/stream_reader.hpp"
 
 typedef int64_t Index;
-std::string provenance;
 
 #include "basic_utils/utils.hpp"
 #include "vocabulary.hpp"
+#include "json.hpp"
 
-
-//Index cnt_bigrams;
+using json = nlohmann::json;
 typedef std::map<Index,Index> Accumulator;
 std::vector<Accumulator> counters;
+json metadata;
 
 Vocabulary vocab;
 
@@ -41,12 +41,14 @@ struct window_params
 std::string get_str_time()
 {
     std::time_t result = std::time(nullptr);
-    return std::asctime(std::localtime(&result));
+    auto res = std::asctime(std::localtime(&result));
+    return std::string(res);
 }
 
 
 int main(int argc, char * argv[])
 {
+    auto time_start = std::time(nullptr);
     Options options = ProcessOptions(argc,argv);
     auto str_path_in = options.path_in.string();
     auto path_out=options.path_out;
@@ -54,19 +56,18 @@ int main(int argc, char * argv[])
     {
         std::cerr << "creating target directory\n";
     }
-    provenance = std::string();
-    provenance += "vocab collected on " + get_str_time();
-    provenance += "source corpus : " + str_path_in + "\n";
+    metadata["timestamp"] = get_str_time();
+    metadata["path_source"] = str_path_in;
 
     std::cerr<<"assigning ids\n";
     vocab.read_from_dir(str_path_in);
 
-    provenance = provenance + "words in corpus : "+ FormatHelper::ConvertToStr(vocab.cnt_words_processed)+"\n";
-    provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
+    metadata["size_corpus"] = vocab.cnt_words_processed;
+    metadata["cnt_words_untrimmed"] = vocab.cnt_words;
     
     vocab.reduce(options.min_frequency);
-    provenance=provenance+"filtered with minimal frequency: "+FormatHelper::ConvertToStr(options.min_frequency)+"\n";
-    provenance = provenance + "unique words : "+ FormatHelper::ConvertToStr(vocab.cnt_words)+"\n";
+    metadata["min_frequency"] = options.min_frequency;
+    metadata["cnt_words"] = vocab.cnt_words;
 
     std::cerr<<"creating list of frequencies\n";
 
@@ -78,15 +79,14 @@ int main(int argc, char * argv[])
     vocab.reassign_ids(vocab.freq_per_id);
     vocab.populate_frequency();
     vocab.populate_ids();
-    
+    auto time_end = std::time(nullptr);    
+    metadata["execution_time"] = time_end - time_start;
     std::cerr<<"dumping ids and frequencies\n";
 
     vocab.dump_ids((path_out / boost::filesystem::path("ids")).string());
     vocab.dump_frequency((path_out / boost::filesystem::path("frequencies")).string());
-    write_value_to_file((path_out / boost::filesystem::path("cnt_unique_words")).string(),vocab.cnt_words);
-    write_value_to_file((path_out / boost::filesystem::path("cnt_words")).string(),vocab.cnt_words_processed);
     write_vector_to_file((path_out / boost::filesystem::path("freq_per_id")).string(),vocab.freq_per_id);
-    write_value_to_file((path_out / boost::filesystem::path("provenance.txt")).string(),provenance);
+    write_value_to_file((path_out / boost::filesystem::path("metadata.json")).string(), metadata.dump(4));
 
     return 0;
 }
