@@ -2,7 +2,7 @@
 #define VOCABULARY
 
 #include <iostream>
-#include <string>  
+#include <string>
 #include <locale>
 #include <boost/locale/encoding_utf.hpp>
 //#include <codecvt>
@@ -14,7 +14,7 @@
 
 class Vocabulary
 {
-	std::set<std::wstring> stopwords;
+    std::set<std::wstring> stopwords;
 public:
     std::vector<std::string> lst_id2word;
     std::vector<int64_t> freq_per_id;
@@ -31,8 +31,8 @@ public:
     void populate_frequency();
     void populate_ids();
     void reassign_ids(std::vector<int64_t> const & lst_frequency);
-	int64_t get_id(const wchar_t * str) ;
-	void reduce(int64_t threshold=5);
+    int64_t get_id(const wchar_t * str) ;
+    void reduce(int64_t threshold = 5);
 };
 
 #endif

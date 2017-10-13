@@ -13,7 +13,7 @@ struct Options
     bool verbose;
     bool debug;
     bool obey_sentence_bounds;
-    Options():verbose(false),debug(false),obey_sentence_bounds(true)
+    Options(): verbose(false), debug(false), obey_sentence_bounds(true)
     {}
 };
 
@@ -26,15 +26,15 @@ Options ProcessOptions(const int argc, char * const argv[])
     pos.add("destination_dir", 2);
 
     optionsDescription.add_options()
-        ("help,h", "produce help message")
-        ("source_dir", program_options::value<boost::filesystem::path>(&options.path_in)->required(), "source dir")
-        ("destination_dir", program_options::value< boost::filesystem::path > (&options.path_out)->required(), "destination dir")
-        ("window_size", program_options::value<uint64_t>(&(options.size_window))->default_value(2), "window size")
-        ("minimal_frequency", program_options::value<uint64_t>(&(options.min_frequency))->default_value(10), "mimimal word frequency")
-        ("debug", program_options::value<bool>(&(options.debug))->default_value(false), "produce debug data")
-        ("obey_sentence_bounds", program_options::value<bool>(&(options.obey_sentence_bounds))->default_value(true), "obey sentence boundaries")
-        //("mode", program_options::value<std::string>(&(options.mode))->default_value("multi"), "execution mode")
-        ;
+    ("help,h", "produce help message")
+    ("source_dir", program_options::value<boost::filesystem::path>(&options.path_in)->required(), "source dir")
+    ("destination_dir", program_options::value< boost::filesystem::path > (&options.path_out)->required(), "destination dir")
+    ("window_size", program_options::value<uint64_t>(&(options.size_window))->default_value(2), "window size")
+    ("minimal_frequency", program_options::value<uint64_t>(&(options.min_frequency))->default_value(10), "mimimal word frequency")
+    ("debug", program_options::value<bool>(&(options.debug))->default_value(false), "produce debug data")
+    ("obey_sentence_bounds", program_options::value<bool>(&(options.obey_sentence_bounds))->default_value(true), "obey sentence boundaries")
+    //("mode", program_options::value<std::string>(&(options.mode))->default_value("multi"), "execution mode")
+    ;
     program_options::variables_map optionsMap;
 
     try
@@ -51,7 +51,7 @@ Options ProcessOptions(const int argc, char * const argv[])
 
     if (optionsMap.count("help"))
     {
-        std::cout << "Usage: "<<argv[0]<<" [options] <source dir> <destination dir> \n";
+        std::cout << "Usage: " << argv[0] << " [options] <source dir> <destination dir> \n";
         std::cout << optionsDescription << std::endl;
         exit(0);
     }
