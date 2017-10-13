@@ -1,0 +1,6 @@
+obj/*
+bin/*
+python/swig/array_of_trees.py
+python/swig/array_of_trees_wrap.cxx
+python/swig/ternary_tree.py
+python/swig/ternary_tree_wrap.cxx
